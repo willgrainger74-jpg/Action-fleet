@@ -202,3 +202,78 @@ function complianceFor(emp, inspections) {
     return { status: 'overdue', lastKey: last,
              label: last ? 'Last: ' + prettyDate(last) : 'Never checked', critical: false };
 }
+
+// ══════════════════════════════════════════════════════════════════
+//  FLEET ASSETS, COMPLIANCE DATES, PREVENTIVE MAINTENANCE
+// ══════════════════════════════════════════════════════════════════
+
+const ASSET_TYPES = {
+    truck:     { label:'Truck',     glyph:'🚚', docs:true  },
+    van:       { label:'Van',       glyph:'🚐', docs:true  },
+    trailer:   { label:'Trailer',   glyph:'🚛', docs:false },
+    excavator: { label:'Excavator', glyph:'⛏',  docs:false }
+};
+const ASSET_TYPE_ORDER = ['truck','van','trailer','excavator'];
+
+// which asset types each crew selects when running a check
+const CREW_ASSET_TYPES = {
+    underground: ['truck','trailer','excavator'],
+    plumbing:    ['truck','van'],
+    hvac:        ['truck','van'],
+    electrical:  ['truck','van']
+};
+
+// label like "Truck 14 · F-450 Dually"
+function assetLabel(a){
+    if(!a) return '—';
+    const t=ASSET_TYPES[a.type]||{label:a.type};
+    return t.label + (a.number?(' '+a.number):'') + (a.name?(' · '+a.name):'');
+}
+
+// ── expiration helpers (registration, insurance, DOT inspection, CDL, med card) ──
+function daysUntil(dateStr){
+    if(!dateStr) return null;
+    const [y,m,d]=dateStr.split('-').map(Number);
+    const target=new Date(y,m-1,d); target.setHours(0,0,0,0);
+    const today=new Date(); today.setHours(0,0,0,0);
+    return Math.round((target-today)/86400000);
+}
+// warnDays default 30 → "soon"
+function expiryStatus(dateStr, warnDays){
+    warnDays=warnDays||30;
+    if(!dateStr) return { status:'none', days:null };
+    const d=daysUntil(dateStr);
+    if(d<0)         return { status:'expired', days:d };
+    if(d<=warnDays) return { status:'soon',    days:d };
+    return { status:'ok', days:d };
+}
+
+// ── preventive maintenance by mileage/hours ──────────────────────────
+// latest odometer/hours seen for an asset across all inspections
+function assetOdometer(assetId, allInspections){
+    let max=0;
+    Object.values(allInspections||{}).forEach(days=>{
+        Object.values(days||{}).forEach(day=>{
+            ['daily','weekly'].forEach(rt=>{
+                const r=day[rt];
+                if(r && r.truckId===assetId && r.odometer!=null){
+                    const o=parseInt(r.odometer,10);
+                    if(!isNaN(o) && o>max) max=o;
+                }
+            });
+        });
+    });
+    return max;
+}
+// returns { status:'ok'|'soon'|'due'|'none', milesLeft, currentOdo }
+function pmStatus(asset, currentOdo){
+    const interval=parseInt(asset.pmIntervalMiles,10);
+    if(!interval) return { status:'none' };
+    const last=parseInt(asset.pmLastServiceMiles||0,10)||0;
+    if(!currentOdo || currentOdo<last) return { status:'ok', milesLeft:interval, currentOdo };
+    const left=interval-(currentOdo-last);
+    if(left<=0)  return { status:'due',  milesLeft:left, currentOdo };
+    const buffer=Math.max(500, Math.round(interval*0.1));
+    if(left<=buffer) return { status:'soon', milesLeft:left, currentOdo };
+    return { status:'ok', milesLeft:left, currentOdo };
+}
