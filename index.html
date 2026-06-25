@@ -124,11 +124,6 @@
         <span class="arrow">→</span>
     </a>
 
-    <div id="lbWrap" style="display:none;margin-top:26px">
-        <div class="eyebrow">🔥 Top Streaks</div>
-        <div id="lbStrip"></div>
-    </div>
-
     <footer>Action Army · Fleet Maintenance</footer>
 </div>
 
@@ -185,30 +180,6 @@
             total++;
             if (comp.status === 'cleared'){ perCrew[e.crew].cleared++; cleared++; }
         });
-
-        // top streaks (motivation strip)
-        const ranked = Object.entries(emps)
-            .filter(([id,e])=>e.active && CREWS[e.crew])
-            .map(([id,e])=>({ e, st:streakFor(e, insp[id]) }))
-            .filter(r=>r.st.current>0)
-            .sort((a,b)=>b.st.current-a.st.current)
-            .slice(0,5);
-        if (ranked.length){
-            document.getElementById('lbWrap').style.display='block';
-            const strip=document.getElementById('lbStrip');
-            strip.innerHTML='';
-            ranked.forEach((r,i)=>{
-                const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
-                const row=document.createElement('div');
-                row.style.cssText='display:flex;align-items:center;gap:12px;background:var(--s1);border:1px solid var(--line);'
-                    +'border-left:3px solid '+(i===0?'#f5c542':'var(--s3)')+';padding:11px 15px;margin-bottom:6px';
-                row.innerHTML='<span style="font-family:var(--disp);font-size:22px;min-width:30px;text-align:center">'+medal+'</span>'
-                    +'<span style="font-family:var(--disp);font-size:22px;letter-spacing:.4px">'+r.e.name+'</span>'
-                    +'<span style="margin-left:auto;font-family:var(--disp);font-size:24px;color:var(--amber)">🔥 '+r.st.current+'</span>'
-                    +'<span style="font-family:var(--lab);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)">'+r.st.unit+'s</span>';
-                strip.appendChild(row);
-            });
-        }
 
         CREW_ORDER.forEach(c=>{
             document.getElementById('n_'+c).textContent = perCrew[c].cleared;
