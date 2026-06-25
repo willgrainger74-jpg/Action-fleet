@@ -277,3 +277,45 @@ function pmStatus(asset, currentOdo){
     if(left<=buffer) return { status:'soon', milesLeft:left, currentOdo };
     return { status:'ok', milesLeft:left, currentOdo };
 }
+
+// ══════════════════════════════════════════════════════════════════
+//  STREAKS & LEADERBOARD
+// ══════════════════════════════════════════════════════════════════
+function parseKey(k){ const [y,m,d]=k.split('-').map(Number); return new Date(y,m-1,d); }
+
+// Consecutive on-time checks + best streak + recent on-time %.
+// Daily crews count by day; weekly crews count by Monday-anchored week.
+// "Today/this period not done yet" does NOT break the streak (counts up to last period).
+function streakFor(emp, inspections){
+    inspections = inspections || {};
+    const cadence = CREWS[emp.crew] ? CREWS[emp.crew].cadence : 'weekly';
+
+    if (cadence==='daily'){
+        const done=new Set(Object.keys(inspections).filter(k=>inspections[k]&&inspections[k].daily));
+        // current streak
+        let cur=0, d=new Date(); d.setHours(0,0,0,0);
+        if(!done.has(dateKey(d))) d.setDate(d.getDate()-1);   // grace: today not done yet
+        while(done.has(dateKey(d))){ cur++; d.setDate(d.getDate()-1); }
+        // longest streak
+        const days=[...done].sort();
+        let longest=0,run=0,prev=null;
+        days.forEach(k=>{ if(prev){ const diff=Math.round((parseKey(k)-parseKey(prev))/86400000); run=diff===1?run+1:1; } else run=1; longest=Math.max(longest,run); prev=k; });
+        // on-time % over last 30 days
+        let hit=0, dd=new Date(); dd.setHours(0,0,0,0);
+        for(let i=0;i<30;i++){ if(done.has(dateKey(dd))) hit++; dd.setDate(dd.getDate()-1); }
+        return { current:cur, longest:Math.max(longest,cur), onTimePct:Math.round(hit/30*100), unit:'day' };
+    }
+
+    // weekly
+    const doneWeeks=new Set();
+    Object.keys(inspections).forEach(k=>{ if(inspections[k]&&inspections[k].weekly) doneWeeks.add(weekStartKey(parseKey(k))); });
+    let cur=0, wk=weekStartKey(new Date());
+    if(!doneWeeks.has(wk)){ const d=parseKey(wk); d.setDate(d.getDate()-7); wk=weekStartKey(d); }
+    while(doneWeeks.has(wk)){ cur++; const d=parseKey(wk); d.setDate(d.getDate()-7); wk=weekStartKey(d); }
+    const weeks=[...doneWeeks].sort();
+    let longest=0,run=0,prev=null;
+    weeks.forEach(k=>{ if(prev){ const diff=Math.round((parseKey(k)-parseKey(prev))/(7*86400000)); run=diff===1?run+1:1; } else run=1; longest=Math.max(longest,run); prev=k; });
+    let hit=0, ww=weekStartKey(new Date());
+    for(let i=0;i<12;i++){ if(doneWeeks.has(ww)) hit++; const d=parseKey(ww); d.setDate(d.getDate()-7); ww=weekStartKey(d); }
+    return { current:cur, longest:Math.max(longest,cur), onTimePct:Math.round(hit/12*100), unit:'week' };
+}

@@ -233,6 +233,7 @@
         <h2 id="doneTitle">Logged</h2>
         <div class="pill green" id="donePill">Rig cleared</div>
         <p id="doneMsg"></p>
+        <div id="streakPill" style="display:none;font-family:var(--disp);font-size:34px;letter-spacing:1px;color:var(--amber);margin:6px 0 8px"></div>
         <p id="alertMsg" style="font-family:var(--lab);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:-14px 0 22px"></p>
         <a class="again" href="index.html">Done</a>
     </div>
@@ -270,7 +271,20 @@
 <script>
 (function(){
     const params = new URLSearchParams(location.search);
-    const crewId = params.get('crew');
+    const PRESELECT_TRUCK = params.get('truck');
+    let crewId = params.get('crew');
+
+    // QR sticker links can carry only ?truck= — resolve its crew, then re-enter
+    if (!crewId && PRESELECT_TRUCK){
+        if (typeof db !== 'undefined' && !firebaseConfig.databaseURL.includes('PASTE_')){
+            fleetRef('assets/'+PRESELECT_TRUCK+'/crew').once('value').then(s=>{
+                const c=s.val();
+                location.replace(c ? ('inspection.html?crew='+c+'&truck='+encodeURIComponent(PRESELECT_TRUCK)) : 'index.html');
+            }).catch(()=>{ location.href='index.html'; });
+        } else { location.href='index.html'; }
+        return;
+    }
+
     const crew = CREWS[crewId];
     if (!crew){ location.href = 'index.html'; return; }
 
@@ -329,13 +343,16 @@
 
         list.forEach(([id,e])=>{
             const comp = complianceFor(e, insp[id]);
+            const st = streakFor(e, insp[id]);
             const card = document.createElement('button');
             card.className = 'namecard';
             const chip = comp.status==='cleared'
                 ? '<span class="chip ok">✓ Done</span>'
                 : '<span class="chip due">Due</span>';
+            const sub = st.current>0 ? ('🔥 '+st.current+' '+st.unit+' streak')
+                                     : (comp.status==='cleared'?'Checked today':'Tap to start');
             card.innerHTML = `<div><div class="nm">${e.name}</div>
-                <div class="rg">${comp.status==='cleared'?'Checked today':'Tap to start'}</div></div>${chip}`;
+                <div class="rg">${sub}</div></div>${chip}`;
             card.onclick = ()=>requirePin(id,e);
             grid.appendChild(card);
         });
@@ -424,6 +441,8 @@
                     .forEach(([aid,a])=>{ optHtml += `<option value="${aid}">${T.label} ${a.number||''}${a.name?(' · '+a.name):''}</option>`; });
                 wrap.innerHTML = `<label>${T.glyph} ${T.label}</label><select data-type="${tp}">${optHtml}</select>`;
                 const s=wrap.querySelector('select');
+                // if arrived via a truck QR, preselect that vehicle
+                if (PRESELECT_TRUCK && opts.some(([aid])=>aid===PRESELECT_TRUCK)) s.value=PRESELECT_TRUCK;
                 const setSel=()=>{
                     const aid=s.value;
                     state.assetSel[tp] = aid ? {id:aid, ...ASSETS[aid]} : null;
@@ -649,6 +668,12 @@
         fleetRef(path).child(key).set(run).then(()=>{
             if (criticalCount>0) sendCriticalAlert(run, defects);   // fire-and-forget
             showDone(criticalCount, defects.length);
+            // celebrate the streak (re-read this person's history including the run just saved)
+            fleetRef('inspections/'+state.empId).once('value').then(s=>{
+                const st=streakFor(state.emp, s.val());
+                const el=document.getElementById('streakPill');
+                if(el && st.current>1){ el.textContent='🔥 '+st.current+'-'+st.unit+' streak!'; el.style.display='block'; }
+            }).catch(()=>{});
         }).catch(()=>{
             btn.disabled=false; btn.textContent='Retry — save failed';
         });

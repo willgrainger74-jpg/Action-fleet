@@ -160,6 +160,22 @@
     .asset.archived{opacity:.5}
     .fleet-sub{font-family:var(--lab);font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:18px 2px 9px;display:flex;align-items:center;gap:8px}
 
+    /* leaderboard */
+    .lbrow{display:flex;align-items:center;gap:14px;background:var(--s1);border:1px solid var(--line);
+        border-left:3px solid var(--s3);padding:13px 16px;margin-bottom:7px}
+    .lbrow.r1{border-left-color:#f5c542} .lbrow.r2{border-left-color:#cbd5e1} .lbrow.r3{border-left-color:#c08457}
+    .lbrow .rank{font-family:var(--disp);font-size:26px;line-height:1;color:var(--muted);min-width:34px;text-align:center}
+    .lbrow.r1 .rank{color:#f5c542} .lbrow.r2 .rank{color:#cbd5e1} .lbrow.r3 .rank{color:#c08457}
+    .lbrow .nm{font-family:var(--disp);font-size:22px;letter-spacing:.4px;line-height:1}
+    .lbrow .sub{font-family:var(--lab);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+    .lbrow .streak{margin-left:auto;text-align:right}
+    .lbrow .streak .big{font-family:var(--disp);font-size:30px;line-height:1;color:var(--amber)}
+    .lbrow .streak .lab{font-family:var(--lab);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+    .lbrow .pct{text-align:right;min-width:58px}
+    .lbrow .pct .big{font-family:var(--disp);font-size:24px;line-height:1}
+    .lbrow .pct .lab{font-family:var(--lab);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+    .lbrow .best{font-family:var(--lab);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:right;min-width:62px}
+
     /* segmented toggle */
     .seg{display:inline-flex;border:1px solid var(--line);margin-bottom:18px}
     .segbtn{font-family:var(--lab);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
@@ -207,13 +223,28 @@
     .report .sig{margin-top:26px;font-size:12px;color:#444;display:flex;gap:40px}
     .report .sig div{flex:1;border-top:1px solid #999;padding-top:6px}
 
+    /* QR print sheet */
+    #qrPrint{display:none}
+    #qrSheetInner{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .qrcard{border:1px solid #000;padding:14px;text-align:center;color:#000;background:#fff;break-inside:avoid}
+    .qrcard .qimg{display:flex;align-items:center;justify-content:center;margin-bottom:8px}
+    .qrcard .qimg img,.qrcard .qimg canvas{width:150px;height:150px}
+    .qrcard .qttl{font-family:Arial,sans-serif;font-weight:700;font-size:15px}
+    .qrcard .qsub{font-family:Arial,sans-serif;font-size:11px;color:#444;margin-top:2px}
+    .qrcard .qfoot{font-family:Arial,sans-serif;font-size:9px;color:#777;margin-top:6px;letter-spacing:.04em}
+
     @media print{
         body{background:#fff}
         .no-print,.tabs,header,.home,#cfgErr{display:none!important}
         .wrap{max-width:none;padding:0}
-        .panel{display:none!important}
-        #panel-reports{display:block!important}
+        body:not(.print-qr) .panel{display:none!important}
+        body:not(.print-qr) #panel-reports{display:block!important}
         .report{padding:0}
+        /* QR sheet printing */
+        body.print-qr .wrap{display:none!important}
+        body.print-qr #qrPrint{display:block!important}
+        #qrPrint{color:#000}
+        #qrSheetInner{padding:0}
     }
 </style>
 </head>
@@ -246,6 +277,7 @@
         <div class="tab" data-tab="maint">Maintenance<span id="maintBadge" class="badge hidden">0</span></div>
         <div class="tab" data-tab="compliance">Compliance<span id="compBadge" class="badge hidden">0</span></div>
         <div class="tab" data-tab="fleet">Fleet</div>
+        <div class="tab" data-tab="leaderboard">Leaderboard</div>
         <div class="tab" data-tab="reports">Reports</div>
         <div class="tab" data-tab="stock">Truck Stock</div>
         <div class="tab" data-tab="roster">Roster</div>
@@ -297,8 +329,21 @@
         <div class="reportbar no-print">
             <div class="fld"><label>Crew</label><select id="flCrew"></select></div>
             <button class="addbtn" id="flAdd" style="width:auto;margin:0;align-self:flex-end;padding:13px 20px">+ Add Vehicle / Asset</button>
+            <button class="mini edit" id="flQR" style="align-self:flex-end;padding:13px 16px">⬛ Print QR Codes</button>
         </div>
         <div id="fleetBody"></div>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div class="panel" id="panel-leaderboard">
+        <div style="color:var(--muted);font-size:13px;line-height:1.6;max-width:560px;margin-bottom:16px">
+            🔥 Current on-time streak, 🏆 best-ever streak, and 30-day on-time rate. Daily for Underground, weekly for the rest.
+        </div>
+        <div class="cards" style="grid-template-columns:repeat(2,1fr)">
+            <div class="card g"><div class="n" id="lbTopName" style="font-size:26px;line-height:1.05">—</div><div class="l">Longest active streak</div></div>
+            <div class="card a"><div class="n" id="lbTeamPct">—</div><div class="l">Team on-time (30d)</div></div>
+        </div>
+        <div id="leaderboardBody"></div>
     </div>
 
     <!-- REPORTS -->
@@ -460,11 +505,15 @@
     <img id="lightboxImg" alt="" style="max-width:100%;max-height:100%;object-fit:contain">
 </div>
 
+<!-- QR PRINT SHEET -->
+<div id="qrPrint"><div id="qrSheetInner"></div></div>
+
 <!-- PHOTO LIGHTBOX END -->
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="firebase-config.js"></script>
 <script src="alerts-config.js"></script>
 <script src="checklists.js"></script>
@@ -524,7 +573,7 @@
             .sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''));
     }
 
-    function paint(){ paintBoard(); paintAlerts(); paintRoster(); paintMaintenance(); paintFleet(); paintCompliance(); fillReportPeople(); }
+    function paint(){ paintBoard(); paintAlerts(); paintRoster(); paintMaintenance(); paintFleet(); paintCompliance(); paintLeaderboard(); fillReportPeople(); }
 
     // ── BOARD ────────────────────────────────────────────────────────
     function paintBoard(){
@@ -1197,6 +1246,76 @@
         if(cdl.status==='soon'||med.status==='soon') return ' · <span style="color:var(--amber)">⚠ doc due</span>';
         return '';
     }
+
+    // ══ LEADERBOARD (streaks) ════════════════════════════════════════
+    function paintLeaderboard(){
+        const rows=activeEmps().map(([id,e])=>{
+            const st=streakFor(e, DATA.insp[id]);
+            return { id, e, st };
+        });
+        // rank by current streak, then on-time %, then best
+        rows.sort((a,b)=> (b.st.current-a.st.current) || (b.st.onTimePct-a.st.onTimePct) || (b.st.longest-a.st.longest));
+
+        const body=document.getElementById('leaderboardBody'); body.innerHTML='';
+        if(!rows.length){ body.innerHTML='<div class="empty">Add crew to see standings.</div>';
+            document.getElementById('lbTopName').textContent='—';
+            document.getElementById('lbTeamPct').textContent='—'; return; }
+
+        // header cards
+        const best=[...rows].sort((a,b)=>b.st.current-a.st.current)[0];
+        document.getElementById('lbTopName').textContent = best.st.current>0 ? (best.e.name+' · '+best.st.current+'🔥') : 'No active streaks';
+        const avg=Math.round(rows.reduce((s,r)=>s+r.st.onTimePct,0)/rows.length);
+        document.getElementById('lbTeamPct').textContent = avg+'%';
+
+        rows.forEach((r,i)=>{
+            const c=CREWS[r.e.crew]||{label:r.e.crew};
+            const row=document.createElement('div'); row.className='lbrow'+(i<3?(' r'+(i+1)):'');
+            const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
+            row.innerHTML=`
+                <div class="rank">${medal}</div>
+                <div><div class="nm">${escapeHtml(r.e.name)}</div><div class="sub">${c.label}</div></div>
+                <div class="streak"><div class="big">${r.st.current>0?('🔥 '+r.st.current):'0'}</div><div class="lab">${r.st.unit==='day'?'day':'wk'} streak</div></div>
+                <div class="best">Best<br>${r.st.longest}</div>
+                <div class="pct"><div class="big" style="color:${r.st.onTimePct>=90?'var(--green)':r.st.onTimePct>=70?'var(--amber)':'#fca5a5'}">${r.st.onTimePct}%</div><div class="lab">on-time</div></div>`;
+            body.appendChild(row);
+        });
+    }
+
+    // ══ QR CODES (scan-to-truck) ═════════════════════════════════════
+    function inspectionBaseUrl(){
+        // build absolute URL to inspection.html sitting next to manager.html
+        const here=location.href.split('#')[0].split('?')[0];
+        return here.replace(/[^/]*$/, 'inspection.html');
+    }
+    document.getElementById('flQR').onclick=()=>{
+        if(typeof QRCode==='undefined'){ alert('QR library still loading — try again in a second.'); return; }
+        const base=inspectionBaseUrl();
+        const assets=Object.entries(DATA.assets)
+            .filter(([id,a])=>a.active!==false)
+            .sort((a,b)=>{
+                const ca=CREW_ORDER.indexOf(a[1].crew)-CREW_ORDER.indexOf(b[1].crew);
+                return ca || assetLabel(a[1]).localeCompare(assetLabel(b[1]));
+            });
+        const inner=document.getElementById('qrSheetInner');
+        inner.innerHTML='';
+        if(!assets.length){ alert('Add some vehicles in Fleet first.'); return; }
+        assets.forEach(([id,a])=>{
+            const url=base+'?truck='+encodeURIComponent(id);
+            const card=document.createElement('div'); card.className='qrcard';
+            const T=ASSET_TYPES[a.type]||{label:a.type};
+            card.innerHTML=`<div class="qimg"></div>
+                <div class="qttl">${escapeHtml(T.label+' '+(a.number||''))}</div>
+                <div class="qsub">${escapeHtml(a.name||'')} · ${CREWS[a.crew]?CREWS[a.crew].label:a.crew}</div>
+                <div class="qfoot">Scan to start your check</div>`;
+            inner.appendChild(card);
+            new QRCode(card.querySelector('.qimg'), { text:url, width:150, height:150,
+                correctLevel: QRCode.CorrectLevel.M });
+        });
+        // print
+        document.body.classList.add('print-qr');
+        setTimeout(()=>{ window.print(); }, 350);   // give QRCode a beat to render
+    };
+    window.addEventListener('afterprint',()=>document.body.classList.remove('print-qr'));
 
     // ── PHOTO LIGHTBOX (delegated) ───────────────────────────────────
     const lightbox=document.getElementById('lightbox');
