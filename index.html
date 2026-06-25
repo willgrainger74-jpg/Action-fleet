@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080808">
+<title>Action Fleet — Vehicle & Maintenance Checks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root{
+        --bg:#080808; --s1:#111; --s2:#161616; --s3:#202020;
+        --line:rgba(255,255,255,.07); --text:#efefef; --muted:#7a7a7a;
+        --red:#dc2626; --green:#22c55e; --amber:#f59e0b;
+        --disp:'Bebas Neue',sans-serif; --lab:'Oswald',sans-serif; --body:'Inter',sans-serif;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    body{background:var(--bg);color:var(--text);font-family:var(--body);
+        min-height:100vh;-webkit-font-smoothing:antialiased}
+    .wrap{max-width:760px;margin:0 auto;padding:0 18px 60px}
+
+    /* header */
+    header{border-top:3px solid var(--red);padding:26px 0 18px;text-align:center}
+    .kicker{font-family:var(--lab);font-size:11px;font-weight:600;letter-spacing:.32em;
+        text-transform:uppercase;color:var(--red);margin-bottom:6px}
+    h1{font-family:var(--disp);font-size:clamp(46px,13vw,78px);line-height:.86;letter-spacing:2px}
+    h1 span{color:var(--muted)}
+    .tag{font-family:var(--lab);font-size:12px;font-weight:500;letter-spacing:.22em;
+        text-transform:uppercase;color:var(--muted);margin-top:8px}
+
+    /* readiness strip — the signature element: an inspection-sticker bar */
+    .ready{margin:22px 0 28px;background:var(--s1);border:1px solid var(--line);
+        border-left:3px solid var(--green);padding:16px 18px;display:flex;
+        align-items:center;justify-content:space-between;gap:14px}
+    .ready.warn{border-left-color:var(--amber)}
+    .ready .big{font-family:var(--disp);font-size:40px;line-height:1;letter-spacing:1px}
+    .ready .lbl{font-family:var(--lab);font-size:10.5px;font-weight:600;letter-spacing:.2em;
+        text-transform:uppercase;color:var(--muted);margin-top:3px}
+    .ready .right{text-align:right}
+    .ready .date{font-family:var(--lab);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+    .ready .flag{font-family:var(--lab);font-size:13px;font-weight:600;letter-spacing:.1em;
+        text-transform:uppercase;margin-top:4px;color:var(--green)}
+    .ready.warn .flag{color:var(--amber)}
+
+    .eyebrow{font-family:var(--lab);font-size:11px;font-weight:600;letter-spacing:.26em;
+        text-transform:uppercase;color:var(--muted);margin:0 2px 14px}
+
+    /* crew tiles */
+    .tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media(max-width:520px){.tiles{grid-template-columns:1fr}}
+    .tile{position:relative;background:var(--s1);border:1px solid var(--line);
+        border-top:3px solid var(--accent);padding:22px 20px 20px;cursor:pointer;
+        text-decoration:none;color:inherit;display:block;overflow:hidden;
+        transition:transform .12s ease,background .15s ease}
+    .tile:active{transform:scale(.985)}
+    .tile:hover{background:var(--s2)}
+    .tile .glyph{font-size:30px;line-height:1;margin-bottom:14px;filter:saturate(.9)}
+    .tile .name{font-family:var(--disp);font-size:30px;letter-spacing:1px;line-height:.9}
+    .tile .sub{font-family:var(--lab);font-size:10.5px;font-weight:500;letter-spacing:.18em;
+        text-transform:uppercase;color:var(--muted);margin-top:7px}
+    .tile .cad{display:inline-block;margin-top:16px;font-family:var(--lab);font-size:10px;
+        font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+        padding:5px 10px;border:1px solid var(--line);color:var(--accent)}
+    .tile .stat{position:absolute;top:18px;right:18px;text-align:right}
+    .tile .stat .n{font-family:var(--disp);font-size:26px;line-height:1}
+    .tile .stat .of{font-family:var(--lab);font-size:9.5px;letter-spacing:.16em;
+        text-transform:uppercase;color:var(--muted)}
+    .tile .arrow{position:absolute;bottom:18px;right:18px;color:var(--muted);
+        font-size:20px;transition:transform .15s,color .15s}
+    .tile:hover .arrow{transform:translateX(3px);color:var(--accent)}
+
+    /* manager */
+    .mgr{margin-top:14px;display:flex;align-items:center;justify-content:space-between;
+        background:var(--s1);border:1px solid var(--line);padding:18px 20px;
+        text-decoration:none;color:inherit;transition:background .15s}
+    .mgr:hover{background:var(--s2)}
+    .mgr .l{display:flex;align-items:center;gap:14px}
+    .mgr .ico{font-size:22px}
+    .mgr .t{font-family:var(--disp);font-size:24px;letter-spacing:1px;line-height:.9}
+    .mgr .d{font-family:var(--lab);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+    .mgr .arrow{color:var(--muted);font-size:18px}
+
+    footer{text-align:center;margin-top:36px;font-family:var(--lab);font-size:10px;
+        letter-spacing:.2em;text-transform:uppercase;color:#3a3a3a}
+    .err{background:#3a1212;border:1px solid #dc2626;color:#fca5a5;font-family:var(--lab);
+        font-size:12px;letter-spacing:.06em;padding:12px 14px;margin:18px 0;display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+    <header>
+        <div class="kicker">Action Plumbing</div>
+        <h1>FLEET<span>CHECK</span></h1>
+        <div class="tag">Vehicle Safety &amp; Maintenance</div>
+    </header>
+
+    <div id="cfgErr" class="err">
+        Firebase isn't connected yet. Open <b>firebase-config.js</b> and paste your project credentials.
+    </div>
+
+    <div class="ready" id="readyStrip">
+        <div>
+            <div class="big" id="readyNum">—</div>
+            <div class="lbl">Rigs cleared</div>
+        </div>
+        <div class="right">
+            <div class="date" id="todayDate"></div>
+            <div class="flag" id="readyFlag">Loading…</div>
+        </div>
+    </div>
+
+    <div class="eyebrow">Choose your crew</div>
+    <div class="tiles" id="tiles"></div>
+
+    <a class="mgr" href="manager.html">
+        <div class="l">
+            <span class="ico">🔒</span>
+            <div>
+                <div class="t">Manager</div>
+                <div class="d">Roster · Compliance · Alerts</div>
+            </div>
+        </div>
+        <span class="arrow">→</span>
+    </a>
+
+    <footer>Action Army · Fleet Maintenance</footer>
+</div>
+
+<!-- Firebase compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="checklists.js"></script>
+<script>
+(function(){
+    document.getElementById('todayDate').textContent =
+        new Date().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
+
+    // build tiles immediately (counts fill in once data loads)
+    const tilesEl = document.getElementById('tiles');
+    CREW_ORDER.forEach(id=>{
+        const c = CREWS[id];
+        const a = document.createElement('a');
+        a.className = 'tile';
+        a.href = 'inspection.html?crew=' + id;
+        a.style.setProperty('--accent', c.accent);
+        a.innerHTML = `
+            <div class="stat"><div class="n" id="n_${id}">·</div><div class="of" id="of_${id}"></div></div>
+            <div class="glyph">${c.glyph}</div>
+            <div class="name">${c.label}</div>
+            <div class="sub">${c.sub}</div>
+            <div class="cad">${c.cadence === 'daily' ? 'Daily check' : 'Weekly · Mon'}</div>
+            <span class="arrow">→</span>`;
+        tilesEl.appendChild(a);
+    });
+
+    // guard: not configured yet
+    if (typeof db === 'undefined' || firebaseConfig.databaseURL.includes('PASTE_')) {
+        document.getElementById('cfgErr').style.display = 'block';
+        document.getElementById('readyFlag').textContent = 'Not connected';
+        return;
+    }
+
+    // load employees + inspections, compute readiness
+    Promise.all([
+        fleetRef('employees').once('value'),
+        fleetRef('inspections').once('value')
+    ]).then(([empSnap, inspSnap])=>{
+        const emps = empSnap.val() || {};
+        const insp = inspSnap.val() || {};
+        const perCrew = {}; CREW_ORDER.forEach(c=>perCrew[c]={total:0,cleared:0});
+        let total=0, cleared=0;
+
+        Object.entries(emps).forEach(([id,e])=>{
+            if (!e.active) return;
+            if (!CREWS[e.crew]) return;
+            const comp = complianceFor(e, insp[id]);
+            perCrew[e.crew].total++;
+            total++;
+            if (comp.status === 'cleared'){ perCrew[e.crew].cleared++; cleared++; }
+        });
+
+        CREW_ORDER.forEach(c=>{
+            document.getElementById('n_'+c).textContent = perCrew[c].cleared;
+            document.getElementById('of_'+c).textContent = '/ ' + perCrew[c].total + ' ready';
+        });
+
+        document.getElementById('readyNum').textContent = cleared + ' / ' + total;
+        const strip = document.getElementById('readyStrip');
+        const flag  = document.getElementById('readyFlag');
+        if (total === 0){
+            flag.textContent = 'Add crew in Manager';
+            strip.classList.add('warn');
+        } else if (cleared === total){
+            flag.textContent = '✓ All rigs cleared';
+        } else {
+            flag.textContent = (total - cleared) + ' still due';
+            strip.classList.add('warn');
+        }
+    }).catch(()=>{
+        document.getElementById('readyFlag').textContent = 'Connection error';
+        document.getElementById('readyStrip').classList.add('warn');
+    });
+})();
+</script>
+</body>
+</html>

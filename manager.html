@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080808">
+<title>Manager — Action Fleet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root{
+        --bg:#080808; --s1:#111; --s2:#161616; --s3:#202020;
+        --line:rgba(255,255,255,.07); --text:#efefef; --muted:#7a7a7a;
+        --red:#dc2626; --green:#22c55e; --amber:#f59e0b;
+        --disp:'Bebas Neue',sans-serif; --lab:'Oswald',sans-serif; --body:'Inter',sans-serif;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:100vh;-webkit-font-smoothing:antialiased}
+    .wrap{max-width:860px;margin:0 auto;padding:0 16px 80px}
+
+    /* PIN gate */
+    #gate{position:fixed;inset:0;z-index:200;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}
+    .gatebox{background:var(--s1);border:1px solid var(--line);border-top:3px solid var(--red);
+        padding:46px 38px;width:100%;max-width:380px;text-align:center}
+    .gatebox .ic{font-size:34px;margin-bottom:14px}
+    .gatebox h2{font-family:var(--disp);font-size:40px;letter-spacing:2px}
+    .gatebox .s{font-family:var(--lab);font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:26px}
+    #pin{width:100%;background:var(--s3);border:1px solid var(--line);color:var(--text);text-align:center;
+        font-family:var(--disp);font-size:32px;letter-spacing:10px;padding:14px;outline:none;margin-bottom:14px}
+    #pin:focus{border-color:var(--red)}
+    #gateBtn{width:100%;background:var(--red);color:#fff;font-family:var(--lab);font-size:13px;font-weight:600;
+        letter-spacing:.2em;text-transform:uppercase;padding:14px;border:none;cursor:pointer}
+    #gateErr{color:#ef4444;font-family:var(--lab);font-size:12px;letter-spacing:.06em;min-height:18px;margin-bottom:8px}
+    .gatebox a{display:inline-block;margin-top:18px;font-family:var(--lab);font-size:11px;letter-spacing:.1em;
+        text-transform:uppercase;color:var(--muted);text-decoration:none}
+
+    header{border-top:3px solid var(--red);padding:20px 0 6px;display:flex;align-items:center;justify-content:space-between}
+    .ttl{font-family:var(--disp);font-size:34px;letter-spacing:1px;line-height:.9}
+    .ttl small{display:block;font-family:var(--lab);font-size:10px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+    .home{font-family:var(--lab);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+        color:var(--muted);text-decoration:none;border:1px solid var(--line);padding:9px 13px;background:var(--s1)}
+
+    /* tabs */
+    .tabs{display:flex;gap:0;border-bottom:1px solid var(--line);margin:18px 0 22px;overflow-x:auto}
+    .tab{font-family:var(--lab);font-size:12.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+        color:var(--muted);padding:13px 16px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+    .tab.active{color:var(--text);border-bottom-color:var(--red)}
+    .tab .badge{display:inline-block;background:var(--amber);color:#1a1200;font-size:10px;font-weight:700;
+        padding:1px 6px;margin-left:6px;border-radius:8px;letter-spacing:0}
+
+    .panel{display:none} .panel.active{display:block}
+
+    /* summary cards */
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px}
+    @media(max-width:540px){.cards{grid-template-columns:1fr}}
+    .card{background:var(--s1);border:1px solid var(--line);padding:16px 18px}
+    .card.g{border-left:3px solid var(--green)} .card.a{border-left:3px solid var(--amber)} .card.r{border-left:3px solid var(--red)}
+    .card .n{font-family:var(--disp);font-size:42px;line-height:.9}
+    .card .l{font-family:var(--lab);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+
+    .crewblock{margin-bottom:24px}
+    .crewblock>h3{font-family:var(--lab);font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;
+        color:var(--muted);margin:0 2px 10px;display:flex;align-items:center;gap:8px}
+    .crewblock>h3 .dot{width:8px;height:8px;display:inline-block}
+    .crewblock>h3 .cad{margin-left:auto;font-size:9.5px;color:#555}
+
+    .row{display:flex;align-items:center;gap:12px;background:var(--s1);border:1px solid var(--line);
+        border-left:3px solid var(--s3);padding:13px 16px;margin-bottom:7px;cursor:pointer;transition:background .12s}
+    .row:hover{background:var(--s2)}
+    .row.cleared{border-left-color:var(--green)} .row.overdue{border-left-color:var(--amber)} .row.down{border-left-color:var(--red)}
+    .row .nm{font-family:var(--disp);font-size:22px;letter-spacing:.5px;line-height:1}
+    .row .meta{font-family:var(--lab);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+    .row .right{margin-left:auto;text-align:right}
+    .row .status{font-family:var(--lab);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+    .status.ok{color:var(--green)} .status.due{color:var(--amber)} .status.dn{color:#fca5a5}
+    .row .when{font-family:var(--lab);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:#555;margin-top:2px}
+    .row .arrow{color:#444;font-size:16px;margin-left:6px}
+
+    .empty{background:var(--s1);border:1px dashed var(--line);padding:26px;text-align:center;
+        font-family:var(--lab);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+    /* roster */
+    .addbtn{width:100%;background:var(--red);color:#fff;font-family:var(--lab);font-size:13px;font-weight:600;
+        letter-spacing:.16em;text-transform:uppercase;padding:14px;border:none;cursor:pointer;margin-bottom:18px}
+    .rosterrow{display:flex;align-items:center;gap:12px;background:var(--s1);border:1px solid var(--line);padding:13px 16px;margin-bottom:7px}
+    .rosterrow.archived{opacity:.5}
+    .rosterrow .nm{font-family:var(--disp);font-size:20px;letter-spacing:.5px;line-height:1}
+    .rosterrow .meta{font-family:var(--lab);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+    .rosterrow .acts{margin-left:auto;display:flex;gap:7px}
+    .mini{font-family:var(--lab);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+        padding:8px 11px;background:transparent;border:1px solid var(--line);color:var(--muted);cursor:pointer}
+    .mini.edit:hover{border-color:#38bdf8;color:#38bdf8}
+    .mini.arch:hover{border-color:var(--amber);color:var(--amber)}
+    .mini.rest:hover{border-color:var(--green);color:var(--green)}
+    .roster-sub{font-family:var(--lab);font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;
+        color:var(--muted);margin:18px 2px 10px}
+
+    /* modal */
+    .modal{position:fixed;inset:0;z-index:150;background:rgba(0,0,0,.7);display:none;align-items:flex-start;justify-content:center;padding:30px 16px;overflow:auto}
+    .modal.show{display:flex}
+    .mbox{background:var(--s1);border:1px solid var(--line);border-top:3px solid var(--red);width:100%;max-width:460px;padding:26px 24px}
+    .mbox h3{font-family:var(--disp);font-size:30px;letter-spacing:1px;margin-bottom:18px}
+    .fld{margin-bottom:13px}
+    .fld label{display:block;font-family:var(--lab);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+    .fld input,.fld select{width:100%;background:var(--s3);border:1px solid var(--line);color:var(--text);
+        font-family:var(--body);font-size:14px;padding:11px 12px;outline:none}
+    .fld input:focus,.fld select:focus{border-color:var(--red)}
+    .haulflds{display:none}
+    .mbtns{display:flex;gap:10px;margin-top:20px}
+    .mbtns button{flex:1;font-family:var(--lab);font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:13px;border:none;cursor:pointer}
+    .save{background:var(--red);color:#fff} .cancel{background:var(--s3);color:var(--muted)}
+
+    /* history drill */
+    .histhead{background:var(--s1);border:1px solid var(--line);border-left:3px solid var(--red);padding:18px 20px;margin-bottom:16px}
+    .histhead .nm{font-family:var(--disp);font-size:32px;letter-spacing:.5px;line-height:.9}
+    .histhead .meta{font-family:var(--lab);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:6px;line-height:1.7}
+    .hrow{background:var(--s1);border:1px solid var(--line);padding:13px 16px;margin-bottom:7px}
+    .hrow .top{display:flex;align-items:center;gap:10px}
+    .hrow .date{font-family:var(--lab);font-size:13px;font-weight:600;letter-spacing:.06em}
+    .hrow .typ{font-family:var(--lab);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+        border:1px solid var(--line);padding:2px 7px}
+    .hrow .res{margin-left:auto;font-family:var(--lab);font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+    .res.clean{color:var(--green)} .res.def{color:var(--amber)} .res.crit{color:#fca5a5}
+    .hrow .defs{margin-top:9px;font-size:13px;color:#cbb;line-height:1.5}
+    .hrow .defs .d{padding:4px 0;border-top:1px solid var(--line)}
+    .hrow .defs .d b{color:#fca5a5}
+    .hrow .note{margin-top:8px;font-size:12.5px;color:var(--muted);font-style:italic}
+
+    .err{background:#3a1212;border:1px solid #dc2626;color:#fca5a5;font-family:var(--lab);font-size:12px;letter-spacing:.06em;padding:12px 14px;margin:14px 0;display:none}
+    .hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<!-- PIN GATE -->
+<div id="gate">
+    <div class="gatebox">
+        <div class="ic">🔒</div>
+        <h2>Manager</h2>
+        <div class="s">Action Fleet</div>
+        <div id="gateErr"></div>
+        <input id="pin" type="password" inputmode="numeric" maxlength="8" placeholder="••••" autocomplete="off">
+        <button id="gateBtn">Unlock</button>
+        <a href="index.html">← Back to fleet</a>
+    </div>
+</div>
+
+<div class="wrap hidden" id="app">
+    <header>
+        <div class="ttl">Manager<small>Fleet Maintenance</small></div>
+        <a class="home" href="index.html">← Fleet</a>
+    </header>
+
+    <div id="cfgErr" class="err">Firebase isn't connected. Paste credentials into firebase-config.js.</div>
+
+    <div class="tabs">
+        <div class="tab active" data-tab="board">Board</div>
+        <div class="tab" data-tab="alerts">Alerts<span id="alertBadge" class="badge hidden">0</span></div>
+        <div class="tab" data-tab="roster">Roster</div>
+        <div class="tab" data-tab="settings">Settings</div>
+    </div>
+
+    <!-- BOARD -->
+    <div class="panel active" id="panel-board">
+        <div class="cards">
+            <div class="card g"><div class="n" id="cCleared">0</div><div class="l">Cleared</div></div>
+            <div class="card a"><div class="n" id="cOverdue">0</div><div class="l">Overdue</div></div>
+            <div class="card r"><div class="n" id="cDown">0</div><div class="l">Rigs down</div></div>
+        </div>
+        <div id="boardBody"></div>
+    </div>
+
+    <!-- ALERTS -->
+    <div class="panel" id="panel-alerts">
+        <div id="alertsBody"></div>
+    </div>
+
+    <!-- ROSTER -->
+    <div class="panel" id="panel-roster">
+        <button class="addbtn" id="addBtn">+ Add Crew Member</button>
+        <div id="rosterBody"></div>
+    </div>
+
+    <!-- HISTORY (drill) -->
+    <div class="panel" id="panel-history">
+        <a class="home" id="histBack" href="#" style="display:inline-block;margin-bottom:16px">← Board</a>
+        <div id="historyBody"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="panel" id="panel-settings">
+        <div class="roster-sub">Manager PIN</div>
+        <div class="fld" style="max-width:300px">
+            <label>Change PIN</label>
+            <input id="newPin" type="text" inputmode="numeric" placeholder="New PIN">
+        </div>
+        <button class="mini edit" id="savePin" style="padding:11px 16px">Save PIN</button>
+        <div id="pinMsg" style="font-family:var(--lab);font-size:12px;color:var(--green);margin-top:10px;min-height:16px"></div>
+
+        <div class="roster-sub" style="margin-top:30px">About cadence</div>
+        <div style="color:var(--muted);font-size:13px;line-height:1.7;max-width:560px">
+            Underground runs a <b style="color:var(--text)">daily</b> pre-trip + securement check — overdue if not done today.
+            Plumbing, HVAC, and Electrical run a <b style="color:var(--text)">weekly</b> maintenance check, due every Monday —
+            overdue if nothing's been logged since Monday. A <b style="color:#fca5a5">critical defect</b> marks the rig down.
+        </div>
+    </div>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal" id="modal">
+    <div class="mbox">
+        <h3 id="modalTitle">Add Crew Member</h3>
+        <div class="fld"><label>Name</label><input id="f_name" type="text" placeholder="Full name"></div>
+        <div class="fld"><label>Crew</label>
+            <select id="f_crew"></select>
+        </div>
+        <div class="fld"><label>Truck Number</label><input id="f_truck" type="text" placeholder="e.g. 14"></div>
+        <div class="fld"><label>Truck Type</label><input id="f_type" type="text" placeholder="e.g. F-450 Dually"></div>
+        <div class="fld"><label>4-Digit PIN <span style="color:#555;text-transform:none;letter-spacing:0">(for sign-in — leave blank for no PIN)</span></label><input id="f_pin" type="text" inputmode="numeric" maxlength="4" placeholder="e.g. 1234"></div>
+        <div class="haulflds" id="haulFlds">
+            <div class="fld"><label>Trailer</label><input id="f_trailer" type="text" placeholder="e.g. 20ft Gooseneck"></div>
+            <div class="fld"><label>Excavator</label><input id="f_exc" type="text" placeholder="e.g. CAT 305 / 11,500 lb"></div>
+        </div>
+        <div id="modalErr" style="color:#ef4444;font-family:var(--lab);font-size:12px;min-height:16px"></div>
+        <div class="mbtns">
+            <button class="cancel" id="mCancel">Cancel</button>
+            <button class="save" id="mSave">Save</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="checklists.js"></script>
+<script>
+(function(){
+    const DEFAULT_PIN='2468';
+    let DATA={emps:{}, insp:{}}, editingId=null;
+
+    // ── PIN gate ─────────────────────────────────────────────────────
+    const gate=document.getElementById('gate'), pin=document.getElementById('pin');
+    function tryUnlock(){
+        const entered=pin.value.trim();
+        const stored=(DATA.managerPin||DEFAULT_PIN);
+        if(entered===stored){
+            gate.style.display='none';
+            document.getElementById('app').classList.remove('hidden');
+            renderAll();
+        } else {
+            document.getElementById('gateErr').textContent='Wrong PIN';
+            pin.value=''; pin.focus();
+        }
+    }
+    document.getElementById('gateBtn').onclick=tryUnlock;
+    pin.addEventListener('keypress',e=>{ if(e.key==='Enter') tryUnlock(); });
+    setTimeout(()=>pin.focus(),120);
+
+    if(typeof db==='undefined' || firebaseConfig.databaseURL.includes('PASTE_')){
+        document.getElementById('gateErr').textContent='Firebase not connected (see firebase-config.js)';
+    }
+
+    // ── tabs ─────────────────────────────────────────────────────────
+    document.querySelectorAll('.tab').forEach(t=>{
+        t.onclick=()=>showTab(t.dataset.tab);
+    });
+    function showTab(name){
+        document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===name));
+        document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+        document.getElementById('panel-'+name).classList.add('active');
+    }
+
+    // ── load data (live) ─────────────────────────────────────────────
+    function renderAll(){
+        if(typeof db==='undefined' || firebaseConfig.databaseURL.includes('PASTE_')){
+            document.getElementById('cfgErr').style.display='block'; return;
+        }
+        fleetRef('config/managerPin').once('value').then(s=>{ if(s.val()) DATA.managerPin=s.val(); });
+        fleetRef('employees').on('value',s=>{ DATA.emps=s.val()||{}; paint(); });
+        fleetRef('inspections').on('value',s=>{ DATA.insp=s.val()||{}; paint(); });
+    }
+
+    function activeEmps(){
+        return Object.entries(DATA.emps)
+            .filter(([id,e])=>e.active && CREWS[e.crew])
+            .sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''));
+    }
+
+    function paint(){ paintBoard(); paintAlerts(); paintRoster(); }
+
+    // ── BOARD ────────────────────────────────────────────────────────
+    function paintBoard(){
+        const body=document.getElementById('boardBody'); body.innerHTML='';
+        let cleared=0,overdue=0,down=0;
+        const emps=activeEmps();
+
+        CREW_ORDER.forEach(cid=>{
+            const c=CREWS[cid];
+            const list=emps.filter(([id,e])=>e.crew===cid);
+            if(!list.length) return;
+            const block=document.createElement('div'); block.className='crewblock';
+            block.innerHTML=`<h3><span class="dot" style="background:${c.accent}"></span>${c.label}
+                <span class="cad">${c.cadence==='daily'?'Daily':'Weekly · Mon'}</span></h3>`;
+            list.forEach(([id,e])=>{
+                const comp=complianceFor(e, DATA.insp[id]);
+                let cls,statusCls,statusTxt;
+                if(comp.status==='cleared' && comp.critical){ cls='down'; statusCls='dn'; statusTxt='Rig down'; down++; }
+                else if(comp.status==='cleared'){ cls='cleared'; statusCls='ok'; statusTxt='Cleared'; cleared++; }
+                else { cls='overdue'; statusCls='due'; statusTxt='Overdue'; overdue++; }
+
+                const row=document.createElement('div'); row.className='row '+cls;
+                row.innerHTML=`<div>
+                        <div class="nm">${e.name}</div>
+                        <div class="meta">${e.truckNumber?('Truck '+e.truckNumber):'No truck'}${e.truckType?(' · '+e.truckType):''}</div>
+                    </div>
+                    <div class="right">
+                        <div class="status ${statusCls}">${statusTxt}</div>
+                        <div class="when">${comp.label}</div>
+                    </div><span class="arrow">›</span>`;
+                row.onclick=()=>openHistory(id,e);
+                block.appendChild(row);
+            });
+            body.appendChild(block);
+        });
+
+        if(!emps.length) body.innerHTML='<div class="empty">No active crew. Add people in the Roster tab.</div>';
+        document.getElementById('cCleared').textContent=cleared;
+        document.getElementById('cOverdue').textContent=overdue;
+        document.getElementById('cDown').textContent=down;
+    }
+
+    // ── ALERTS ───────────────────────────────────────────────────────
+    function paintAlerts(){
+        const body=document.getElementById('alertsBody'); body.innerHTML='';
+        const emps=activeEmps();
+        const flagged=[];
+        emps.forEach(([id,e])=>{
+            const comp=complianceFor(e, DATA.insp[id]);
+            if(comp.status==='overdue') flagged.push({id,e,comp,kind:'overdue'});
+            else if(comp.critical) flagged.push({id,e,comp,kind:'down'});
+        });
+        flagged.sort((a,b)=> (a.kind==='down'?0:1)-(b.kind==='down'?0:1));
+
+        const badge=document.getElementById('alertBadge');
+        if(flagged.length){ badge.textContent=flagged.length; badge.classList.remove('hidden'); }
+        else badge.classList.add('hidden');
+
+        if(!flagged.length){ body.innerHTML='<div class="empty">✓ Everyone\'s current. No alerts.</div>'; return; }
+
+        flagged.forEach(f=>{
+            const c=CREWS[f.e.crew];
+            const row=document.createElement('div');
+            row.className='row '+(f.kind==='down'?'down':'overdue');
+            const stat=f.kind==='down'
+                ? '<div class="status dn">Rig down</div>'
+                : '<div class="status due">'+(c.cadence==='daily'?'Missed today':'Not done this week')+'</div>';
+            row.innerHTML=`<div>
+                    <div class="nm">${f.e.name}</div>
+                    <div class="meta">${c.label}${f.e.truckNumber?(' · Truck '+f.e.truckNumber):''}</div>
+                </div>
+                <div class="right">${stat}<div class="when">${f.comp.label}</div></div><span class="arrow">›</span>`;
+            row.onclick=()=>openHistory(f.id,f.e);
+            body.appendChild(row);
+        });
+    }
+
+    // ── ROSTER ───────────────────────────────────────────────────────
+    function paintRoster(){
+        const body=document.getElementById('rosterBody'); body.innerHTML='';
+        const all=Object.entries(DATA.emps).sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''));
+        const active=all.filter(([id,e])=>e.active);
+        const archived=all.filter(([id,e])=>!e.active);
+
+        if(!all.length){ body.innerHTML='<div class="empty">No crew yet. Add your first person above.</div>'; return; }
+
+        active.forEach(([id,e])=>body.appendChild(rosterRow(id,e,false)));
+        if(archived.length){
+            const h=document.createElement('div'); h.className='roster-sub'; h.textContent='Archived';
+            body.appendChild(h);
+            archived.forEach(([id,e])=>body.appendChild(rosterRow(id,e,true)));
+        }
+    }
+    function rosterRow(id,e,isArch){
+        const c=CREWS[e.crew]||{label:e.crew};
+        const row=document.createElement('div'); row.className='rosterrow'+(isArch?' archived':'');
+        let meta=c.label;
+        if(e.truckNumber) meta+=' · Truck '+e.truckNumber;
+        if(e.excavator) meta+=' · '+e.excavator;
+        meta+= e.pin ? ' · PIN '+e.pin : ' · <span style="color:#a06a1a">No PIN</span>';
+        row.innerHTML=`<div><div class="nm">${e.name}</div><div class="meta">${meta}</div></div>
+            <div class="acts">
+                <button class="mini edit">Edit</button>
+                ${isArch ? '<button class="mini rest">Restore</button>'
+                         : '<button class="mini arch">Archive</button>'}
+            </div>`;
+        row.querySelector('.edit').onclick=()=>openModal(id,e);
+        if(isArch) row.querySelector('.rest').onclick=()=>setActive(id,true);
+        else row.querySelector('.arch').onclick=()=>setActive(id,false);
+        return row;
+    }
+    function setActive(id,val){ fleetRef('employees/'+id+'/active').set(val); }
+
+    // ── MODAL (add/edit) ─────────────────────────────────────────────
+    const modal=document.getElementById('modal');
+    const fCrew=document.getElementById('f_crew');
+    CREW_ORDER.forEach(cid=>{
+        const o=document.createElement('option'); o.value=cid; o.textContent=CREWS[cid].label; fCrew.appendChild(o);
+    });
+    function toggleHaulFlds(){
+        document.getElementById('haulFlds').style.display = CREWS[fCrew.value].hauls?'block':'none';
+    }
+    fCrew.onchange=toggleHaulFlds;
+
+    document.getElementById('addBtn').onclick=()=>openModal(null,null);
+    function openModal(id,e){
+        editingId=id;
+        document.getElementById('modalTitle').textContent=id?'Edit Crew Member':'Add Crew Member';
+        document.getElementById('f_name').value=e?e.name||'':'';
+        fCrew.value=e?e.crew||'underground':'underground';
+        document.getElementById('f_truck').value=e?e.truckNumber||'':'';
+        document.getElementById('f_type').value=e?e.truckType||'':'';
+        document.getElementById('f_pin').value=e?e.pin||'':'';
+        document.getElementById('f_trailer').value=e?e.trailer||'':'';
+        document.getElementById('f_exc').value=e?e.excavator||'':'';
+        document.getElementById('modalErr').textContent='';
+        toggleHaulFlds();
+        modal.classList.add('show');
+    }
+    document.getElementById('mCancel').onclick=()=>modal.classList.remove('show');
+    modal.onclick=(e)=>{ if(e.target===modal) modal.classList.remove('show'); };
+    document.getElementById('mSave').onclick=()=>{
+        const name=document.getElementById('f_name').value.trim();
+        if(!name){ document.getElementById('modalErr').textContent='Name is required'; return; }
+        const pinVal=document.getElementById('f_pin').value.trim();
+        if(pinVal && !/^\d{4}$/.test(pinVal)){
+            document.getElementById('modalErr').textContent='PIN must be exactly 4 digits (or blank)'; return;
+        }
+        const crew=fCrew.value;
+        const rec={
+            name, crew,
+            pin: pinVal||null,
+            truckNumber:document.getElementById('f_truck').value.trim()||null,
+            truckType:document.getElementById('f_type').value.trim()||null,
+            trailer: CREWS[crew].hauls?(document.getElementById('f_trailer').value.trim()||null):null,
+            excavator: CREWS[crew].hauls?(document.getElementById('f_exc').value.trim()||null):null,
+            active:true
+        };
+        if(editingId){
+            fleetRef('employees/'+editingId).update(rec).then(()=>modal.classList.remove('show'));
+        } else {
+            rec.createdAt=Date.now();
+            fleetRef('employees').push(rec).then(()=>modal.classList.remove('show'));
+        }
+    };
+
+    // ── HISTORY DRILL ────────────────────────────────────────────────
+    document.getElementById('histBack').onclick=(e)=>{ e.preventDefault(); showTab('board'); };
+    function openHistory(id,e){
+        showTab('history');
+        const c=CREWS[e.crew]||{label:e.crew};
+        const insp=DATA.insp[id]||{};
+        const comp=complianceFor(e,insp);
+
+        let head=`<div class="histhead">
+            <div class="nm">${e.name}</div>
+            <div class="meta">${c.label}
+            ${e.truckNumber?(' · Truck '+e.truckNumber):''}${e.truckType?(' · '+e.truckType):''}
+            ${e.trailer?('<br>Trailer: '+e.trailer):''}${e.excavator?(' · '+e.excavator):''}
+            <br>Status: ${comp.label}</div></div>`;
+
+        // flatten runs (daily + weekly) across dates, newest first
+        const runs=[];
+        Object.keys(insp).sort().reverse().forEach(dk=>{
+            const day=insp[dk];
+            if(day.daily) runs.push({date:dk, run:day.daily});
+            if(day.weekly) runs.push({date:dk, run:day.weekly});
+        });
+
+        let rows='';
+        if(!runs.length){ rows='<div class="empty">No checks logged yet.</div>'; }
+        runs.forEach(({date,run})=>{
+            let resCls,resTxt;
+            if(run.criticalCount>0){ resCls='crit'; resTxt='⛔ '+run.criticalCount+' critical'; }
+            else if(run.defectCount>0){ resCls='def'; resTxt='⚠ '+run.defectCount+' defect'+(run.defectCount>1?'s':''); }
+            else { resCls='clean'; resTxt='✓ Clear'; }
+
+            let defsHtml='';
+            if(run.defects && run.defects.length){
+                defsHtml='<div class="defs">'+run.defects.map(d=>
+                    `<div class="d">${d.critical?'<b>CRITICAL — </b>':''}${d.item}${d.note?(' — '+escapeHtml(d.note)):''}</div>`
+                ).join('')+'</div>';
+            }
+            const typLabel=(run.type==='daily'?'Daily DVIR':'Weekly')+(run.hauling?' · hauling':'');
+            const note=run.notes?`<div class="note">“${escapeHtml(run.notes)}”</div>`:'';
+            rows+=`<div class="hrow">
+                <div class="top">
+                    <span class="date">${prettyDate(date)}</span>
+                    <span class="typ">${typLabel}</span>
+                    <span class="res ${resCls}">${resTxt}</span>
+                </div>${defsHtml}${note}</div>`;
+        });
+
+        document.getElementById('historyBody').innerHTML=head+rows;
+    }
+
+    function escapeHtml(s){return (s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
+
+    // ── SETTINGS: change PIN ─────────────────────────────────────────
+    document.getElementById('savePin').onclick=()=>{
+        const v=document.getElementById('newPin').value.trim();
+        if(v.length<4){ document.getElementById('pinMsg').style.color='#ef4444';
+            document.getElementById('pinMsg').textContent='Use at least 4 digits'; return; }
+        fleetRef('config/managerPin').set(v).then(()=>{
+            DATA.managerPin=v;
+            document.getElementById('pinMsg').style.color='var(--green)';
+            document.getElementById('pinMsg').textContent='PIN updated';
+            document.getElementById('newPin').value='';
+        });
+    };
+})();
+</script>
+</body>
+</html>
