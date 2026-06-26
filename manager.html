@@ -402,16 +402,17 @@
 
         <div class="roster-sub" style="margin-top:30px">Rig-Down Email Alerts</div>
         <div style="color:var(--muted);font-size:13px;line-height:1.6;max-width:560px;margin-bottom:14px">
-            When a guy logs a <b style="color:#fca5a5">critical</b> defect, the app emails this address instantly.
+            When a guy logs a <b style="color:#fca5a5">critical</b> defect, <b style="color:var(--text)">every email below</b> gets pinged instantly.
             <span id="alertStatus"></span>
         </div>
-        <div class="fld" style="max-width:340px">
-            <label>Alert Email</label>
-            <input id="alertEmail" type="email" placeholder="you@actionplumbing.com">
+        <div style="display:flex;gap:8px;max-width:430px;align-items:flex-end">
+            <div class="fld" style="flex:1;margin-bottom:0"><label>Add Alert Email</label>
+                <input id="alertEmail" type="email" placeholder="name@actionplumbing.com"></div>
+            <button class="mini edit" id="addAlertEmail" style="padding:12px 16px">+ Add</button>
         </div>
-        <div style="display:flex;gap:8px">
-            <button class="mini edit" id="saveAlertEmail" style="padding:11px 16px">Save Email</button>
-            <button class="mini" id="testAlert" style="padding:11px 16px">Send Test</button>
+        <div id="emailList" style="margin-top:12px;max-width:430px"></div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="mini" id="testAlert" style="padding:11px 16px">Send Test to All</button>
         </div>
         <div id="alertMsg" style="font-family:var(--lab);font-size:12px;color:var(--green);margin-top:10px;min-height:16px"></div>
 
@@ -1527,27 +1528,59 @@
         else
             el.innerHTML=' <b style="color:var(--amber)">EmailJS not set up yet</b> — see alerts-config.js to turn alerts on.';
     })();
-    fleetRef('config/alertEmail').once('value').then(s=>{ if(s.val()) document.getElementById('alertEmail').value=s.val(); });
-    document.getElementById('saveAlertEmail').onclick=()=>{
-        const v=document.getElementById('alertEmail').value.trim();
-        const msg=document.getElementById('alertMsg');
-        fleetRef('config/alertEmail').set(v||null).then(()=>{
-            msg.style.color='var(--green)'; msg.textContent=v?'Alert email saved':'Alert email cleared';
+    let alertEmails=[];
+    function renderEmailList(){
+        const el=document.getElementById('emailList');
+        if(!alertEmails.length){ el.innerHTML='<div class="empty" style="padding:14px">No alert emails yet — add one above.</div>'; return; }
+        el.innerHTML='';
+        alertEmails.forEach(em=>{
+            const row=document.createElement('div'); row.className='rosterrow';
+            row.innerHTML=`<div><div class="nm" style="font-size:16px">📧 ${escapeHtml(em)}</div></div>
+                <div class="acts"><button class="mini arch">Remove</button></div>`;
+            row.querySelector('.arch').onclick=()=>{ alertEmails=alertEmails.filter(x=>x!==em); saveEmails('Removed'); };
+            el.appendChild(row);
         });
+    }
+    function saveEmails(note){
+        fleetRef('config/alertEmails').set(alertEmails).then(()=>{
+            renderEmailList();
+            if(note){ const m=document.getElementById('alertMsg'); m.style.color='var(--green)'; m.textContent=note; }
+        });
+    }
+    // load (migrate the old single-email field if present)
+    Promise.all([
+        fleetRef('config/alertEmails').once('value'),
+        fleetRef('config/alertEmail').once('value')
+    ]).then(([a,b])=>{
+        const v=a.val();
+        if(Array.isArray(v)) alertEmails=v.filter(Boolean);
+        else if(v && typeof v==='object') alertEmails=Object.values(v).filter(Boolean);
+        else alertEmails=[];
+        if(!alertEmails.length && b.val()) alertEmails=[b.val()];   // migrate old single email
+        renderEmailList();
+    });
+    document.getElementById('addAlertEmail').onclick=()=>{
+        const inp=document.getElementById('alertEmail');
+        const v=inp.value.trim();
+        const msg=document.getElementById('alertMsg');
+        if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){ msg.style.color='#ef4444'; msg.textContent='Enter a valid email'; return; }
+        if(alertEmails.includes(v)){ msg.style.color='#ef4444'; msg.textContent='Already on the list'; return; }
+        alertEmails.push(v); inp.value='';
+        saveEmails('Added '+v);
     };
+    document.getElementById('alertEmail').addEventListener('keypress',e=>{ if(e.key==='Enter') document.getElementById('addAlertEmail').click(); });
     document.getElementById('testAlert').onclick=()=>{
         const msg=document.getElementById('alertMsg');
-        const to=document.getElementById('alertEmail').value.trim();
-        if(!to){ msg.style.color='#ef4444'; msg.textContent='Enter an email first'; return; }
+        if(!alertEmails.length){ msg.style.color='#ef4444'; msg.textContent='Add at least one email first'; return; }
         if(typeof emailjs==='undefined' || !alertsConfigured()){
             msg.style.color='#ef4444'; msg.textContent='EmailJS not configured (see alerts-config.js)'; return;
         }
         msg.style.color='var(--muted)'; msg.textContent='Sending test…';
-        emailjs.send(EMAILJS.serviceId, EMAILJS.templateId, {
+        Promise.all(alertEmails.map(to=>emailjs.send(EMAILJS.serviceId, EMAILJS.templateId, {
             to_email:to, driver:'TEST', crew:'Underground', truck:'00',
             items:'• This is a test alert', notes:'If you got this, alerts work.',
             when:new Date().toLocaleString('en-US')
-        }).then(()=>{ msg.style.color='var(--green)'; msg.textContent='✓ Test sent — check your inbox'; })
+        }))).then(()=>{ msg.style.color='var(--green)'; msg.textContent='✓ Test sent to '+alertEmails.length+' address(es) — check inboxes'; })
           .catch(err=>{ msg.style.color='#ef4444'; msg.textContent='Failed: '+(err&&err.text?err.text:'check EmailJS setup'); });
     };
 

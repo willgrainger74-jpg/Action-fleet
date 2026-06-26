@@ -682,12 +682,20 @@
     // ── critical-defect email alert (EmailJS, no backend) ─────────────
     function sendCriticalAlert(run, defects){
         if (typeof emailjs==='undefined' || typeof alertsConfigured!=='function' || !alertsConfigured()) return;
-        fleetRef('config/alertEmail').once('value').then(s=>{
-            const to=(s.val()||'').trim(); if(!to) return;
+        Promise.all([
+            fleetRef('config/alertEmails').once('value'),
+            fleetRef('config/alertEmail').once('value')
+        ]).then(([a,b])=>{
+            let list=[];
+            const v=a.val();
+            if(Array.isArray(v)) list=v.filter(Boolean);
+            else if(v && typeof v==='object') list=Object.values(v).filter(Boolean);
+            if(!list.length && b.val()) list=[b.val()];   // fallback to old single email
+            if(!list.length) return;
+
             const critItems=defects.filter(d=>d.critical)
                 .map(d=>'• '+d.item+(d.note?(' — '+d.note):'')).join('\n');
-            const params={
-                to_email: to,
+            const base={
                 driver:   run.submittedBy,
                 crew:     crew.label,
                 truck:    run.truckLabel || run.truckNumber || '(no truck selected)',
@@ -695,9 +703,12 @@
                 notes:    run.notes||'(none)',
                 when:     new Date().toLocaleString('en-US')
             };
-            emailjs.send(EMAILJS.serviceId, EMAILJS.templateId, params)
-                .then(()=>{ const m=document.getElementById('alertMsg'); if(m) m.textContent='📧 Manager alerted by email'; })
-                .catch(err=>console.warn('Alert email failed:', err));
+            list.forEach(to=>{
+                emailjs.send(EMAILJS.serviceId, EMAILJS.templateId, { ...base, to_email:to })
+                    .catch(err=>console.warn('Alert email failed for', to, err));
+            });
+            const m=document.getElementById('alertMsg');
+            if(m) m.textContent='📧 Manager alerted by email';
         });
     }
 
