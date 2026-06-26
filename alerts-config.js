@@ -28,9 +28,9 @@
 // ══════════════════════════════════════════════════════════════════
 
 const EMAILJS = {
-    publicKey:  "PASTE_PUBLIC_KEY",
-    serviceId:  "PASTE_SERVICE_ID",
-    templateId: "PASTE_TEMPLATE_ID"
+    publicKey:  "AyKhM_nNoz_2aVQHp",
+    serviceId:  "service_aveedsm",
+    templateId: "template_i4lw08d"
 };
 
 function alertsConfigured() {
