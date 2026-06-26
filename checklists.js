@@ -202,3 +202,144 @@ function complianceFor(emp, inspections) {
     return { status: 'overdue', lastKey: last,
              label: last ? 'Last: ' + prettyDate(last) : 'Never checked', critical: false };
 }
+
+// ══════════════════════════════════════════════════════════════════
+//  FLEET ASSETS, COMPLIANCE DATES, PREVENTIVE MAINTENANCE
+// ══════════════════════════════════════════════════════════════════
+
+const ASSET_TYPES = {
+    truck:     { label:'Truck',     glyph:'🚚', docs:true  },
+    van:       { label:'Van',       glyph:'🚐', docs:true  },
+    trailer:   { label:'Trailer',   glyph:'🚛', docs:false },
+    excavator: { label:'Excavator', glyph:'⛏',  docs:false }
+};
+const ASSET_TYPE_ORDER = ['truck','van','trailer','excavator'];
+
+// which asset types each crew selects when running a check
+const CREW_ASSET_TYPES = {
+    underground: ['truck','trailer','excavator'],
+    plumbing:    ['truck','van'],
+    hvac:        ['truck','van'],
+    electrical:  ['truck','van']
+};
+
+// label like "Truck 14 · F-450 Dually"
+function assetLabel(a){
+    if(!a) return '—';
+    const t=ASSET_TYPES[a.type]||{label:a.type};
+    return t.label + (a.number?(' '+a.number):'') + (a.name?(' · '+a.name):'');
+}
+
+// ── expiration helpers (registration, insurance, DOT inspection, CDL, med card) ──
+function daysUntil(dateStr){
+    if(!dateStr) return null;
+    const [y,m,d]=dateStr.split('-').map(Number);
+    const target=new Date(y,m-1,d); target.setHours(0,0,0,0);
+    const today=new Date(); today.setHours(0,0,0,0);
+    return Math.round((target-today)/86400000);
+}
+// warnDays default 30 → "soon"
+function expiryStatus(dateStr, warnDays){
+    warnDays=warnDays||30;
+    if(!dateStr) return { status:'none', days:null };
+    const d=daysUntil(dateStr);
+    if(d<0)         return { status:'expired', days:d };
+    if(d<=warnDays) return { status:'soon',    days:d };
+    return { status:'ok', days:d };
+}
+
+// ── preventive maintenance by mileage/hours ──────────────────────────
+// latest odometer/hours seen for an asset across all inspections
+function assetOdometer(assetId, allInspections){
+    let max=0;
+    Object.values(allInspections||{}).forEach(days=>{
+        Object.values(days||{}).forEach(day=>{
+            ['daily','weekly'].forEach(rt=>{
+                const r=day[rt];
+                if(r && r.truckId===assetId && r.odometer!=null){
+                    const o=parseInt(r.odometer,10);
+                    if(!isNaN(o) && o>max) max=o;
+                }
+            });
+        });
+    });
+    return max;
+}
+// returns { status:'ok'|'soon'|'due'|'none', milesLeft, currentOdo }
+function pmStatus(asset, currentOdo){
+    const interval=parseInt(asset.pmIntervalMiles,10);
+    if(!interval) return { status:'none' };
+    const last=parseInt(asset.pmLastServiceMiles||0,10)||0;
+    if(!currentOdo || currentOdo<last) return { status:'ok', milesLeft:interval, currentOdo };
+    const left=interval-(currentOdo-last);
+    if(left<=0)  return { status:'due',  milesLeft:left, currentOdo };
+    const buffer=Math.max(500, Math.round(interval*0.1));
+    if(left<=buffer) return { status:'soon', milesLeft:left, currentOdo };
+    return { status:'ok', milesLeft:left, currentOdo };
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  STREAKS & LEADERBOARD
+// ══════════════════════════════════════════════════════════════════
+function parseKey(k){ const [y,m,d]=k.split('-').map(Number); return new Date(y,m-1,d); }
+
+// Consecutive on-time checks + best streak + recent on-time %.
+// Daily crews count by day; weekly crews count by Monday-anchored week.
+// "Today/this period not done yet" does NOT break the streak (counts up to last period).
+function streakFor(emp, inspections){
+    inspections = inspections || {};
+    const cadence = CREWS[emp.crew] ? CREWS[emp.crew].cadence : 'weekly';
+
+    if (cadence==='daily'){
+        const done=new Set(Object.keys(inspections).filter(k=>inspections[k]&&inspections[k].daily));
+        // current streak
+        let cur=0, d=new Date(); d.setHours(0,0,0,0);
+        if(!done.has(dateKey(d))) d.setDate(d.getDate()-1);   // grace: today not done yet
+        while(done.has(dateKey(d))){ cur++; d.setDate(d.getDate()-1); }
+        // longest streak
+        const days=[...done].sort();
+        let longest=0,run=0,prev=null;
+        days.forEach(k=>{ if(prev){ const diff=Math.round((parseKey(k)-parseKey(prev))/86400000); run=diff===1?run+1:1; } else run=1; longest=Math.max(longest,run); prev=k; });
+        // on-time % over last 30 days
+        let hit=0, dd=new Date(); dd.setHours(0,0,0,0);
+        for(let i=0;i<30;i++){ if(done.has(dateKey(dd))) hit++; dd.setDate(dd.getDate()-1); }
+        return { current:cur, longest:Math.max(longest,cur), onTimePct:Math.round(hit/30*100), unit:'day' };
+    }
+
+    // weekly
+    const doneWeeks=new Set();
+    Object.keys(inspections).forEach(k=>{ if(inspections[k]&&inspections[k].weekly) doneWeeks.add(weekStartKey(parseKey(k))); });
+    let cur=0, wk=weekStartKey(new Date());
+    if(!doneWeeks.has(wk)){ const d=parseKey(wk); d.setDate(d.getDate()-7); wk=weekStartKey(d); }
+    while(doneWeeks.has(wk)){ cur++; const d=parseKey(wk); d.setDate(d.getDate()-7); wk=weekStartKey(d); }
+    const weeks=[...doneWeeks].sort();
+    let longest=0,run=0,prev=null;
+    weeks.forEach(k=>{ if(prev){ const diff=Math.round((parseKey(k)-parseKey(prev))/(7*86400000)); run=diff===1?run+1:1; } else run=1; longest=Math.max(longest,run); prev=k; });
+    let hit=0, ww=weekStartKey(new Date());
+    for(let i=0;i<12;i++){ if(doneWeeks.has(ww)) hit++; const d=parseKey(ww); d.setDate(d.getDate()-7); ww=weekStartKey(d); }
+    return { current:cur, longest:Math.max(longest,cur), onTimePct:Math.round(hit/12*100), unit:'week' };
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  VEHICLE COST TRACKING / REPLACEMENT SIGNAL
+// ══════════════════════════════════════════════════════════════════
+// costs = the object stored at fleet/costs/{assetId}
+function assetCostTotals(costs){
+    let total=0, year=0, downDays=0;
+    const y=String(new Date().getFullYear());
+    Object.values(costs||{}).forEach(c=>{
+        const amt=parseFloat(c.amount)||0;
+        total+=amt;
+        if((c.date||'').slice(0,4)===y) year+=amt;
+        downDays += parseInt(c.downDays||0,10)||0;
+    });
+    return { total, year, downDays };
+}
+// Common fleet heuristic: if lifetime repair/maintenance cost reaches ~50%
+// of what the truck is worth, it's usually time to replace it.
+function replaceSignal(asset, total){
+    const pp=parseFloat(asset.purchasePrice)||0;
+    if(!pp) return { flag:false, pct:null };
+    const pct=Math.round(total/pp*100);
+    return { flag: pct>=50, pct };
+}

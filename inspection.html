@@ -55,6 +55,11 @@
     .rig .f{min-width:64px}
     .rig .f .k{font-family:var(--lab);font-size:9.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
     .rig .f .v{font-family:var(--lab);font-size:15px;font-weight:600;letter-spacing:.04em;margin-top:2px}
+    .rigsel{display:flex;flex-wrap:wrap;gap:12px;width:100%}
+    .rigsel .f2{flex:1;min-width:150px}
+    .rigsel label{display:block;font-family:var(--lab);font-size:9.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+    .rigsel select{width:100%;background:var(--s3);border:1px solid var(--line);color:var(--text);font-family:var(--body);font-size:14px;padding:11px 12px;outline:none}
+    .rigsel select:focus{border-color:var(--accent)}
 
     /* run-type toggle (underground) */
     .runtypes{display:flex;gap:10px;margin:8px 0 4px}
@@ -101,6 +106,16 @@
     .defect-note.show{display:block}
     .defect-note textarea{width:100%;background:var(--s3);border:1px solid rgba(220,38,38,.35);
         color:var(--text);font-family:var(--body);font-size:13px;padding:10px 12px;outline:none;resize:vertical;min-height:46px}
+    .photo-row{display:flex;align-items:center;gap:12px;margin-top:9px}
+    .addphoto{display:inline-flex;align-items:center;gap:7px;font-family:var(--lab);font-size:11px;font-weight:600;
+        letter-spacing:.08em;text-transform:uppercase;color:var(--accent);border:1px solid var(--line);
+        padding:9px 13px;cursor:pointer;background:var(--s3)}
+    .addphoto:active{background:var(--s2)}
+    .thumb-wrap{position:relative;display:none}
+    .thumb-wrap.show{display:block}
+    .thumb-wrap img{height:54px;width:54px;object-fit:cover;border:1px solid var(--line);display:block}
+    .thumb-wrap .x{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;
+        background:var(--red);color:#fff;border:none;font-size:13px;cursor:pointer;line-height:1}
 
     .meta{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
     .meta .fld{flex:1;min-width:140px}
@@ -218,6 +233,8 @@
         <h2 id="doneTitle">Logged</h2>
         <div class="pill green" id="donePill">Rig cleared</div>
         <p id="doneMsg"></p>
+        <div id="streakPill" style="display:none;font-family:var(--disp);font-size:34px;letter-spacing:1px;color:var(--amber);margin:6px 0 8px"></div>
+        <p id="alertMsg" style="font-family:var(--lab);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:-14px 0 22px"></p>
         <a class="again" href="index.html">Done</a>
     </div>
 </div>
@@ -247,12 +264,27 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="firebase-config.js"></script>
+<script src="alerts-config.js"></script>
 <script src="checklists.js"></script>
 <script>
 (function(){
     const params = new URLSearchParams(location.search);
-    const crewId = params.get('crew');
+    const PRESELECT_TRUCK = params.get('truck');
+    let crewId = params.get('crew');
+
+    // QR sticker links can carry only ?truck= — resolve its crew, then re-enter
+    if (!crewId && PRESELECT_TRUCK){
+        if (typeof db !== 'undefined' && !firebaseConfig.databaseURL.includes('PASTE_')){
+            fleetRef('assets/'+PRESELECT_TRUCK+'/crew').once('value').then(s=>{
+                const c=s.val();
+                location.replace(c ? ('inspection.html?crew='+c+'&truck='+encodeURIComponent(PRESELECT_TRUCK)) : 'index.html');
+            }).catch(()=>{ location.href='index.html'; });
+        } else { location.href='index.html'; }
+        return;
+    }
+
     const crew = CREWS[crewId];
     if (!crew){ location.href = 'index.html'; return; }
 
@@ -269,16 +301,39 @@
 
     let state = {
         emp:null, empId:null, runType:'daily', hauling:true,
-        answers:{}, defectNotes:{}
+        answers:{}, defectNotes:{}, defectPhotos:{}, assetSel:{}
     };
 
+    // resize + compress a camera photo to a small JPEG dataURL for storage
+    function compressImage(file, maxDim, quality){
+        return new Promise((resolve,reject)=>{
+            const reader=new FileReader();
+            reader.onload=()=>{
+                const img=new Image();
+                img.onload=()=>{
+                    let w=img.width, h=img.height;
+                    const scale=Math.min(1, maxDim/Math.max(w,h));
+                    w=Math.round(w*scale); h=Math.round(h*scale);
+                    const c=document.createElement('canvas'); c.width=w; c.height=h;
+                    c.getContext('2d').drawImage(img,0,0,w,h);
+                    resolve(c.toDataURL('image/jpeg', quality));
+                };
+                img.onerror=reject; img.src=reader.result;
+            };
+            reader.onerror=reject; reader.readAsDataURL(file);
+        });
+    }
+
     // ── load crew roster ─────────────────────────────────────────────
+    let ASSETS = {};
     Promise.all([
         fleetRef('employees').once('value'),
-        fleetRef('inspections').once('value')
-    ]).then(([empSnap, inspSnap])=>{
+        fleetRef('inspections').once('value'),
+        fleetRef('assets').once('value')
+    ]).then(([empSnap, inspSnap, assetSnap])=>{
         const emps = empSnap.val() || {};
         const insp = inspSnap.val() || {};
+        ASSETS = assetSnap.val() || {};
         const list = Object.entries(emps)
             .filter(([id,e])=>e.active && e.crew===crewId)
             .sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''));
@@ -288,13 +343,16 @@
 
         list.forEach(([id,e])=>{
             const comp = complianceFor(e, insp[id]);
+            const st = streakFor(e, insp[id]);
             const card = document.createElement('button');
             card.className = 'namecard';
             const chip = comp.status==='cleared'
                 ? '<span class="chip ok">✓ Done</span>'
                 : '<span class="chip due">Due</span>';
+            const sub = st.current>0 ? ('🔥 '+st.current+' '+st.unit+' streak')
+                                     : (comp.status==='cleared'?'Checked today':'Tap to start');
             card.innerHTML = `<div><div class="nm">${e.name}</div>
-                <div class="rg">${e.truckNumber?('Truck '+e.truckNumber):'No truck set'}</div></div>${chip}`;
+                <div class="rg">${sub}</div></div>${chip}`;
             card.onclick = ()=>requirePin(id,e);
             grid.appendChild(card);
         });
@@ -357,16 +415,42 @@
         document.getElementById('backBtn').href='#';
         document.getElementById('backBtn').onclick=(ev)=>{ ev.preventDefault(); location.reload(); };
 
-        // rig banner
+        // rig banner + vehicle picker
         const rig = document.getElementById('rigBanner');
+        state.assetSel = {};
+        const types = CREW_ASSET_TYPES[crewId] || ['truck'];
+        const crewAssets = Object.entries(ASSETS)
+            .filter(([aid,a])=>a.active!==false && a.crew===crewId);
+
         let html = `<div class="who">${e.name}</div>`;
-        html += field('Truck #', e.truckNumber);
-        html += field('Type', e.truckType);
-        if (crew.hauls){
-            html += field('Trailer', e.trailer);
-            html += field('Excavator', e.excavator);
+        if (!crewAssets.length){
+            html += `<div class="f"><div class="k">Vehicle</div><div class="v" style="color:var(--amber)">None set up — ask your manager</div></div>`;
+            rig.innerHTML = html;
+        } else {
+            html += `<div class="rigsel" id="rigSel"></div>`;
+            rig.innerHTML = html;
+            const sel = document.getElementById('rigSel');
+            types.forEach(tp=>{
+                const opts = crewAssets.filter(([aid,a])=>a.type===tp);
+                if(!opts.length) return;
+                const T = ASSET_TYPES[tp];
+                const optional = (tp!=='truck'); // truck is the primary pick
+                const wrap=document.createElement('div'); wrap.className='f2';
+                let optHtml = optional ? `<option value="">— none —</option>` : '';
+                opts.sort((a,b)=>String(a[1].number||'').localeCompare(String(b[1].number||''),undefined,{numeric:true}))
+                    .forEach(([aid,a])=>{ optHtml += `<option value="${aid}">${T.label} ${a.number||''}${a.name?(' · '+a.name):''}</option>`; });
+                wrap.innerHTML = `<label>${T.glyph} ${T.label}</label><select data-type="${tp}">${optHtml}</select>`;
+                const s=wrap.querySelector('select');
+                // if arrived via a truck QR, preselect that vehicle
+                if (PRESELECT_TRUCK && opts.some(([aid])=>aid===PRESELECT_TRUCK)) s.value=PRESELECT_TRUCK;
+                const setSel=()=>{
+                    const aid=s.value;
+                    state.assetSel[tp] = aid ? {id:aid, ...ASSETS[aid]} : null;
+                };
+                s.onchange=setSel; setSel(); // default to first option
+                sel.appendChild(wrap);
+            });
         }
-        rig.innerHTML = html;
 
         // run type
         if (crew.cadence==='daily'){
@@ -401,7 +485,7 @@
 
     // ── render checklist ─────────────────────────────────────────────
     function renderSections(){
-        state.answers={}; state.defectNotes={};
+        state.answers={}; state.defectNotes={}; state.defectPhotos={};
         const tpl = templateFor(state.runType);
         const haulWrap = document.getElementById('haulWrap');
         const showHaul = (state.runType==='daily' && crew.hauls);
@@ -434,12 +518,34 @@
                     </div>
                     <div class="defect-note">
                         <textarea placeholder="What's wrong? (helps the mechanic)"></textarea>
+                        <div class="photo-row">
+                            <label class="addphoto">📷 Add photo
+                                <input type="file" accept="image/*" capture="environment" hidden>
+                            </label>
+                            <div class="thumb-wrap"><img alt=""><button class="x" type="button">×</button></div>
+                        </div>
                     </div>`;
                 const toggle=item.querySelector('.toggle');
                 toggle.querySelectorAll('button').forEach(btn=>{
                     btn.onclick=()=>setAnswer(item, sec.id, it.id, btn.dataset.v);
                 });
                 item.querySelector('textarea').oninput=(e)=>{ state.defectNotes[it.id]=e.target.value; };
+                // photo wiring
+                const fileIn=item.querySelector('input[type=file]');
+                const thumbWrap=item.querySelector('.thumb-wrap');
+                const thumbImg=thumbWrap.querySelector('img');
+                fileIn.onchange=async(e)=>{
+                    const f=e.target.files&&e.target.files[0]; if(!f) return;
+                    try{
+                        const data=await compressImage(f,1024,0.6);
+                        state.defectPhotos[it.id]=data;
+                        thumbImg.src=data; thumbWrap.classList.add('show');
+                    }catch(_){ /* ignore */ }
+                    fileIn.value='';
+                };
+                thumbWrap.querySelector('.x').onclick=()=>{
+                    delete state.defectPhotos[it.id]; thumbImg.src=''; thumbWrap.classList.remove('show');
+                };
                 sectionEl.appendChild(item);
             });
             sectionEl.querySelector('.markall').onclick=()=>{
@@ -478,7 +584,12 @@
         const toggle=item.querySelector('.toggle');
         toggle.querySelectorAll('button').forEach(b=>b.classList.toggle('on', b.dataset.v===val));
         item.querySelector('.defect-note').classList.toggle('show', val==='defect');
-        if (val!=='defect') delete state.defectNotes[itemId];
+        if (val!=='defect'){
+            delete state.defectNotes[itemId];
+            delete state.defectPhotos[itemId];
+            const tw=item.querySelector('.thumb-wrap');
+            if(tw){ tw.classList.remove('show'); tw.querySelector('img').src=''; }
+        }
         updateProgress();
     }
 
@@ -519,13 +630,24 @@
         items.forEach(it=>{
             if (state.answers[it.id]==='defect'){
                 if (critMap[it.id]) criticalCount++;
-                defects.push({ item:it.label, note:(state.defectNotes[it.id]||'').trim(), critical:!!critMap[it.id] });
+                const d={ item:it.label, note:(state.defectNotes[it.id]||'').trim(), critical:!!critMap[it.id] };
+                if (state.defectPhotos[it.id]) d.photo=state.defectPhotos[it.id];
+                defects.push(d);
             }
         });
 
+        const sel=state.assetSel||{};
+        const truck=sel.truck||sel.van||null;
         const run={
             type:state.runType,
             hauling: (state.runType==='daily'&&crew.hauls) ? state.hauling : null,
+            truckId:    truck ? truck.id : null,
+            truckNumber:truck ? (truck.number||null) : null,
+            truckLabel: truck ? assetLabel(truck) : null,
+            trailerId:    sel.trailer ? sel.trailer.id : null,
+            trailerLabel: sel.trailer ? assetLabel(sel.trailer) : null,
+            excavatorId:    sel.excavator ? sel.excavator.id : null,
+            excavatorLabel: sel.excavator ? assetLabel(sel.excavator) : null,
             answers:state.answers,
             defects:defects,
             defectCount:defects.length,
@@ -544,9 +666,38 @@
         btn.disabled=true; btn.textContent='Saving…';
 
         fleetRef(path).child(key).set(run).then(()=>{
+            if (criticalCount>0) sendCriticalAlert(run, defects);   // fire-and-forget
             showDone(criticalCount, defects.length);
+            // celebrate the streak (re-read this person's history including the run just saved)
+            fleetRef('inspections/'+state.empId).once('value').then(s=>{
+                const st=streakFor(state.emp, s.val());
+                const el=document.getElementById('streakPill');
+                if(el && st.current>1){ el.textContent='🔥 '+st.current+'-'+st.unit+' streak!'; el.style.display='block'; }
+            }).catch(()=>{});
         }).catch(()=>{
             btn.disabled=false; btn.textContent='Retry — save failed';
+        });
+    }
+
+    // ── critical-defect email alert (EmailJS, no backend) ─────────────
+    function sendCriticalAlert(run, defects){
+        if (typeof emailjs==='undefined' || typeof alertsConfigured!=='function' || !alertsConfigured()) return;
+        fleetRef('config/alertEmail').once('value').then(s=>{
+            const to=(s.val()||'').trim(); if(!to) return;
+            const critItems=defects.filter(d=>d.critical)
+                .map(d=>'• '+d.item+(d.note?(' — '+d.note):'')).join('\n');
+            const params={
+                to_email: to,
+                driver:   run.submittedBy,
+                crew:     crew.label,
+                truck:    run.truckLabel || run.truckNumber || '(no truck selected)',
+                items:    critItems,
+                notes:    run.notes||'(none)',
+                when:     new Date().toLocaleString('en-US')
+            };
+            emailjs.send(EMAILJS.serviceId, EMAILJS.templateId, params)
+                .then(()=>{ const m=document.getElementById('alertMsg'); if(m) m.textContent='📧 Manager alerted by email'; })
+                .catch(err=>console.warn('Alert email failed:', err));
         });
     }
 

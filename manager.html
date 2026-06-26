@@ -129,6 +129,131 @@
 
     .err{background:#3a1212;border:1px solid #dc2626;color:#fca5a5;font-family:var(--lab);font-size:12px;letter-spacing:.06em;padding:12px 14px;margin:14px 0;display:none}
     .hidden{display:none!important}
+
+    /* defect photo thumbnails */
+    .dphoto{height:48px;width:48px;object-fit:cover;border:1px solid var(--line);cursor:zoom-in;vertical-align:middle;margin-top:8px}
+    .report .dphoto{height:60px;width:60px}
+
+    /* expiry badges */
+    .exp{display:inline-block;font-family:var(--lab);font-size:9.5px;font-weight:600;letter-spacing:.08em;
+        text-transform:uppercase;padding:3px 8px;border:1px solid var(--line);color:var(--muted);margin:3px 5px 0 0}
+    .exp.ok{color:var(--green);border-color:rgba(34,197,94,.4)}
+    .exp.soon{color:var(--amber);border-color:rgba(245,158,11,.4)}
+    .exp.expired,.exp.due{color:#fca5a5;border-color:var(--red);background:#3a1212}
+    .exp.none{color:#555}
+
+    /* compliance + fleet rows */
+    .crow{background:var(--s1);border:1px solid var(--line);border-left:3px solid var(--amber);padding:13px 16px;margin-bottom:8px}
+    .crow.expired,.crow.due{border-left-color:var(--red)}
+    .crow .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .crow .who{font-family:var(--disp);font-size:22px;letter-spacing:.4px;line-height:1}
+    .crow .kind{font-family:var(--lab);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+    .crow .res{margin-left:auto;font-family:var(--lab);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+    .crow .res.exp{color:#fca5a5} .crow .res.sn{color:var(--amber)}
+
+    .asset{background:var(--s1);border:1px solid var(--line);border-left:3px solid var(--s3);padding:13px 16px;margin-bottom:7px}
+    .asset .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .asset .glyph{font-size:20px}
+    .asset .nm{font-family:var(--disp);font-size:22px;letter-spacing:.4px;line-height:1}
+    .asset .acts{margin-left:auto;display:flex;gap:7px}
+    .asset .badges{margin-top:6px}
+    .asset.archived{opacity:.5}
+    .fleet-sub{font-family:var(--lab);font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:18px 2px 9px;display:flex;align-items:center;gap:8px}
+
+    /* leaderboard */
+    .lbrow{display:flex;align-items:center;gap:14px;background:var(--s1);border:1px solid var(--line);
+        border-left:3px solid var(--s3);padding:13px 16px;margin-bottom:7px}
+    .lbrow.r1{border-left-color:#f5c542} .lbrow.r2{border-left-color:#cbd5e1} .lbrow.r3{border-left-color:#c08457}
+    .lbrow .rank{font-family:var(--disp);font-size:26px;line-height:1;color:var(--muted);min-width:34px;text-align:center}
+    .lbrow.r1 .rank{color:#f5c542} .lbrow.r2 .rank{color:#cbd5e1} .lbrow.r3 .rank{color:#c08457}
+    .lbrow .nm{font-family:var(--disp);font-size:22px;letter-spacing:.4px;line-height:1}
+    .lbrow .sub{font-family:var(--lab);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+    .lbrow .streak{margin-left:auto;text-align:right}
+    .lbrow .streak .big{font-family:var(--disp);font-size:30px;line-height:1;color:var(--amber)}
+    .lbrow .streak .lab{font-family:var(--lab);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+    .lbrow .pct{text-align:right;min-width:58px}
+    .lbrow .pct .big{font-family:var(--disp);font-size:24px;line-height:1}
+    .lbrow .pct .lab{font-family:var(--lab);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+    .lbrow .best{font-family:var(--lab);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:right;min-width:62px}
+
+    /* segmented toggle */
+    .seg{display:inline-flex;border:1px solid var(--line);margin-bottom:18px}
+    .segbtn{font-family:var(--lab);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+        padding:10px 16px;background:transparent;color:var(--muted);border:none;cursor:pointer}
+    .segbtn.active{background:var(--red);color:#fff}
+
+    /* report / stock control bar */
+    .reportbar{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:20px}
+    .reportbar .fld{margin-bottom:0;min-width:170px}
+    .reportbar .seg{margin-bottom:0}
+
+    /* maintenance / work-order rows */
+    .wo{background:var(--s1);border:1px solid var(--line);border-left:3px solid var(--amber);padding:14px 16px;margin-bottom:8px}
+    .wo.crit{border-left-color:var(--red)}
+    .wo.done{border-left-color:var(--green);opacity:.7}
+    .wo .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .wo .item{font-family:var(--disp);font-size:22px;letter-spacing:.4px;line-height:1}
+    .wo .critflag{font-family:var(--lab);font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+        color:#fca5a5;border:1px solid var(--red);background:#3a1212;padding:2px 7px}
+    .wo .who{margin-left:auto;text-align:right;font-family:var(--lab);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);line-height:1.5}
+    .wo .note{margin-top:9px;font-size:13.5px;color:#ddd;line-height:1.5}
+    .wo .note b{color:var(--muted);font-weight:600}
+    .wo .acts{margin-top:11px;display:flex;gap:8px}
+
+    /* stock rows */
+    .stockrow{display:flex;align-items:center;gap:12px;background:var(--s1);border:1px solid var(--line);padding:13px 16px;margin-bottom:7px}
+    .stockrow .nm{font-family:var(--lab);font-size:15px;font-weight:600;letter-spacing:.02em}
+    .stockrow .sub{font-family:var(--lab);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+    .stockrow .par{font-family:var(--disp);font-size:26px;line-height:1;color:var(--text);margin-left:auto;text-align:center;min-width:44px}
+    .stockrow .par small{display:block;font-family:var(--lab);font-size:8.5px;letter-spacing:.14em;color:var(--muted)}
+    .stockrow .acts{display:flex;gap:7px}
+
+    /* report output */
+    .report{background:#fff;color:#111;padding:30px 32px;font-family:Arial,Helvetica,sans-serif}
+    .report h2{font-size:22px;margin:0 0 2px;letter-spacing:.5px}
+    .report .rsub{font-size:12px;color:#555;margin-bottom:18px}
+    .report .rmeta{font-size:13px;margin-bottom:16px;line-height:1.6}
+    .report table{width:100%;border-collapse:collapse;margin-bottom:18px;font-size:12.5px}
+    .report th,.report td{border:1px solid #ccc;padding:7px 9px;text-align:left;vertical-align:top}
+    .report th{background:#f0f0f0;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+    .report .ok{color:#157a3a;font-weight:700}
+    .report .def{color:#b45309;font-weight:700}
+    .report .crit{color:#b91c1c;font-weight:700}
+    .report .rnone{padding:30px;text-align:center;color:#777}
+    .report .sig{margin-top:26px;font-size:12px;color:#444;display:flex;gap:40px}
+    .report .sig div{flex:1;border-top:1px solid #999;padding-top:6px}
+
+    /* QR print sheet */
+    #qrPrint{display:none}
+    #fleetPrint{display:none}
+    .costbadge{display:inline-block;font-family:var(--lab);font-size:9.5px;font-weight:600;letter-spacing:.08em;
+        text-transform:uppercase;padding:3px 8px;border:1px solid var(--line);color:var(--text);margin:3px 5px 0 0}
+    .costbadge.warn{color:#fca5a5;border-color:var(--red);background:#3a1212}
+    #qrSheetInner{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .qrcard{border:1px solid #000;padding:14px;text-align:center;color:#000;background:#fff;break-inside:avoid}
+    .qrcard .qimg{display:flex;align-items:center;justify-content:center;margin-bottom:8px}
+    .qrcard .qimg img,.qrcard .qimg canvas{width:150px;height:150px}
+    .qrcard .qttl{font-family:Arial,sans-serif;font-weight:700;font-size:15px}
+    .qrcard .qsub{font-family:Arial,sans-serif;font-size:11px;color:#444;margin-top:2px}
+    .qrcard .qfoot{font-family:Arial,sans-serif;font-size:9px;color:#777;margin-top:6px;letter-spacing:.04em}
+
+    @media print{
+        body{background:#fff}
+        .no-print,.tabs,header,.home,#cfgErr{display:none!important}
+        .wrap{max-width:none;padding:0}
+        body:not(.print-qr):not(.print-fleet) .panel{display:none!important}
+        body:not(.print-qr):not(.print-fleet) #panel-reports{display:block!important}
+        body:not(.print-qr):not(.print-fleet) #fleetReportArea{display:none!important}
+        .report{padding:0}
+        /* QR sheet printing */
+        body.print-qr .wrap{display:none!important}
+        body.print-qr #qrPrint{display:block!important}
+        #qrPrint{color:#000}
+        #qrSheetInner{padding:0}
+        /* fleet report printing */
+        body.print-fleet .wrap{display:none!important}
+        body.print-fleet #fleetPrint{display:block!important}
+    }
 </style>
 </head>
 <body>
@@ -157,6 +282,12 @@
     <div class="tabs">
         <div class="tab active" data-tab="board">Board</div>
         <div class="tab" data-tab="alerts">Alerts<span id="alertBadge" class="badge hidden">0</span></div>
+        <div class="tab" data-tab="maint">Maintenance<span id="maintBadge" class="badge hidden">0</span></div>
+        <div class="tab" data-tab="compliance">Compliance<span id="compBadge" class="badge hidden">0</span></div>
+        <div class="tab" data-tab="fleet">Fleet</div>
+        <div class="tab" data-tab="leaderboard">Leaderboard</div>
+        <div class="tab" data-tab="reports">Reports</div>
+        <div class="tab" data-tab="stock">Truck Stock</div>
         <div class="tab" data-tab="roster">Roster</div>
         <div class="tab" data-tab="settings">Settings</div>
     </div>
@@ -182,6 +313,77 @@
         <div id="rosterBody"></div>
     </div>
 
+    <!-- MAINTENANCE / DEFECT QUEUE -->
+    <div class="panel" id="panel-maint">
+        <div class="seg" id="maintFilter">
+            <button class="segbtn active" data-f="open">Needs work</button>
+            <button class="segbtn" data-f="resolved">Fixed</button>
+        </div>
+        <div id="maintBody"></div>
+    </div>
+
+    <!-- COMPLIANCE (doc expirations + PM due) -->
+    <div class="panel" id="panel-compliance">
+        <div style="color:var(--muted);font-size:13px;line-height:1.6;max-width:580px;margin-bottom:16px">
+            Anything <b style="color:#fca5a5">expired</b> or due within <b style="color:var(--text)">30 days</b> —
+            truck registration, insurance &amp; annual DOT inspection (§396.17), driver CDL &amp; DOT medical card (§391.45),
+            and preventive-maintenance service intervals.
+        </div>
+        <div id="complianceBody"></div>
+    </div>
+
+    <!-- FLEET (asset registry by crew) -->
+    <div class="panel" id="panel-fleet">
+        <div class="reportbar no-print">
+            <div class="fld"><label>Crew</label><select id="flCrew"></select></div>
+            <button class="addbtn" id="flAdd" style="width:auto;margin:0;align-self:flex-end;padding:13px 20px">+ Add Vehicle / Asset</button>
+            <button class="mini edit" id="flReport" style="align-self:flex-end;padding:13px 16px">📄 Fleet Status Report</button>
+            <button class="mini edit" id="flQR" style="align-self:flex-end;padding:13px 16px">⬛ Print QR Codes</button>
+        </div>
+        <div id="fleetReportArea"></div>
+        <div id="fleetBody"></div>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div class="panel" id="panel-leaderboard">
+        <div style="color:var(--muted);font-size:13px;line-height:1.6;max-width:560px;margin-bottom:16px">
+            🔥 Current on-time streak, 🏆 best-ever streak, and 30-day on-time rate. Daily for Underground, weekly for the rest.
+        </div>
+        <div class="cards" style="grid-template-columns:repeat(2,1fr)">
+            <div class="card g"><div class="n" id="lbTopName" style="font-size:26px;line-height:1.05">—</div><div class="l">Longest active streak</div></div>
+            <div class="card a"><div class="n" id="lbTeamPct">—</div><div class="l">Team on-time (30d)</div></div>
+        </div>
+        <div id="leaderboardBody"></div>
+    </div>
+
+    <!-- REPORTS -->
+    <div class="panel" id="panel-reports">
+        <div class="reportbar no-print">
+            <div class="fld"><label>Vehicle / Person</label>
+                <select id="rpPerson"></select></div>
+            <div class="seg" id="rpMode" style="align-self:flex-end">
+                <button class="segbtn active" data-m="day">By day</button>
+                <button class="segbtn" data-m="month">By month</button>
+            </div>
+            <div class="fld" id="rpDayWrap"><label>Date</label>
+                <input id="rpDay" type="date"></div>
+            <div class="fld hidden" id="rpMonthWrap"><label>Month</label>
+                <input id="rpMonth" type="month"></div>
+            <button class="addbtn" id="rpGo" style="width:auto;margin:0;align-self:flex-end;padding:13px 20px">Generate</button>
+            <button class="mini edit" id="rpPrint" style="align-self:flex-end;padding:13px 16px;display:none">🖨 Print</button>
+        </div>
+        <div id="reportArea"></div>
+    </div>
+
+    <!-- TRUCK STOCK -->
+    <div class="panel" id="panel-stock">
+        <div class="reportbar no-print">
+            <div class="fld"><label>Crew</label><select id="stCrew"></select></div>
+            <button class="addbtn" id="stAdd" style="width:auto;margin:0;align-self:flex-end;padding:13px 20px">+ Add Stock Item</button>
+        </div>
+        <div id="stockBody"></div>
+    </div>
+
     <!-- HISTORY (drill) -->
     <div class="panel" id="panel-history">
         <a class="home" id="histBack" href="#" style="display:inline-block;margin-bottom:16px">← Board</a>
@@ -198,6 +400,21 @@
         <button class="mini edit" id="savePin" style="padding:11px 16px">Save PIN</button>
         <div id="pinMsg" style="font-family:var(--lab);font-size:12px;color:var(--green);margin-top:10px;min-height:16px"></div>
 
+        <div class="roster-sub" style="margin-top:30px">Rig-Down Email Alerts</div>
+        <div style="color:var(--muted);font-size:13px;line-height:1.6;max-width:560px;margin-bottom:14px">
+            When a guy logs a <b style="color:#fca5a5">critical</b> defect, the app emails this address instantly.
+            <span id="alertStatus"></span>
+        </div>
+        <div class="fld" style="max-width:340px">
+            <label>Alert Email</label>
+            <input id="alertEmail" type="email" placeholder="you@actionplumbing.com">
+        </div>
+        <div style="display:flex;gap:8px">
+            <button class="mini edit" id="saveAlertEmail" style="padding:11px 16px">Save Email</button>
+            <button class="mini" id="testAlert" style="padding:11px 16px">Send Test</button>
+        </div>
+        <div id="alertMsg" style="font-family:var(--lab);font-size:12px;color:var(--green);margin-top:10px;min-height:16px"></div>
+
         <div class="roster-sub" style="margin-top:30px">About cadence</div>
         <div style="color:var(--muted);font-size:13px;line-height:1.7;max-width:560px">
             Underground runs a <b style="color:var(--text)">daily</b> pre-trip + securement check — overdue if not done today.
@@ -207,7 +424,7 @@
     </div>
 </div>
 
-<!-- ADD/EDIT MODAL -->
+<!-- ADD/EDIT MODAL (crew member) -->
 <div class="modal" id="modal">
     <div class="mbox">
         <h3 id="modalTitle">Add Crew Member</h3>
@@ -215,13 +432,9 @@
         <div class="fld"><label>Crew</label>
             <select id="f_crew"></select>
         </div>
-        <div class="fld"><label>Truck Number</label><input id="f_truck" type="text" placeholder="e.g. 14"></div>
-        <div class="fld"><label>Truck Type</label><input id="f_type" type="text" placeholder="e.g. F-450 Dually"></div>
         <div class="fld"><label>4-Digit PIN <span style="color:#555;text-transform:none;letter-spacing:0">(for sign-in — leave blank for no PIN)</span></label><input id="f_pin" type="text" inputmode="numeric" maxlength="4" placeholder="e.g. 1234"></div>
-        <div class="haulflds" id="haulFlds">
-            <div class="fld"><label>Trailer</label><input id="f_trailer" type="text" placeholder="e.g. 20ft Gooseneck"></div>
-            <div class="fld"><label>Excavator</label><input id="f_exc" type="text" placeholder="e.g. CAT 305 / 11,500 lb"></div>
-        </div>
+        <div class="fld"><label>CDL Expiration <span style="color:#555;text-transform:none;letter-spacing:0">(optional)</span></label><input id="f_cdl" type="date"></div>
+        <div class="fld"><label>DOT Medical Card Expiration <span style="color:#555;text-transform:none;letter-spacing:0">(§391.45 — optional)</span></label><input id="f_med" type="date"></div>
         <div id="modalErr" style="color:#ef4444;font-family:var(--lab);font-size:12px;min-height:16px"></div>
         <div class="mbtns">
             <button class="cancel" id="mCancel">Cancel</button>
@@ -230,14 +443,135 @@
     </div>
 </div>
 
+<!-- QUICK PIN MODAL -->
+<div class="modal" id="pinModal">
+    <div class="mbox">
+        <h3 id="pinModalTitle">Set PIN</h3>
+        <div class="fld"><label>4-Digit PIN <span style="color:#555;text-transform:none;letter-spacing:0">(blank = remove)</span></label>
+            <input id="pm_pin" type="text" inputmode="numeric" maxlength="4" placeholder="e.g. 1234"></div>
+        <div id="pmErr" style="color:#ef4444;font-family:var(--lab);font-size:12px;min-height:16px"></div>
+        <div class="mbtns">
+            <button class="cancel" id="pmCancel">Cancel</button>
+            <button class="save" id="pmSave">Save PIN</button>
+        </div>
+    </div>
+</div>
+
+<!-- STOCK ITEM MODAL -->
+<div class="modal" id="stockModal">
+    <div class="mbox">
+        <h3 id="stockModalTitle">Add Stock Item</h3>
+        <div class="fld"><label>Item</label><input id="sk_name" type="text" placeholder="e.g. 4&quot; PVC coupling"></div>
+        <div class="fld"><label>Par / Target Qty <span style="color:#555;text-transform:none;letter-spacing:0">(optional)</span></label>
+            <input id="sk_par" type="text" inputmode="numeric" placeholder="e.g. 12"></div>
+        <div class="fld"><label>Note <span style="color:#555;text-transform:none;letter-spacing:0">(optional)</span></label>
+            <input id="sk_note" type="text" placeholder="e.g. keep in side bin"></div>
+        <div id="skErr" style="color:#ef4444;font-family:var(--lab);font-size:12px;min-height:16px"></div>
+        <div class="mbtns">
+            <button class="cancel" id="skCancel">Cancel</button>
+            <button class="save" id="skSave">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- FLEET ASSET MODAL -->
+<div class="modal" id="assetModal">
+    <div class="mbox" style="max-width:500px">
+        <h3 id="assetModalTitle">Add Vehicle / Asset</h3>
+        <div style="display:flex;gap:10px">
+            <div class="fld" style="flex:1"><label>Type</label><select id="a_type"></select></div>
+            <div class="fld" style="flex:1"><label>Crew</label><select id="a_crew"></select></div>
+        </div>
+        <div style="display:flex;gap:10px">
+            <div class="fld" style="flex:1"><label>Unit Number</label><input id="a_number" type="text" placeholder="e.g. 14"></div>
+            <div class="fld" style="flex:2"><label>Description</label><input id="a_name" type="text" placeholder="e.g. F-450 Dually / CAT 305"></div>
+        </div>
+
+        <div id="a_docs">
+            <div class="roster-sub" style="margin:8px 0 10px">Compliance Dates</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <div class="fld" style="flex:1;min-width:130px"><label>Registration Exp.</label><input id="a_reg" type="date"></div>
+                <div class="fld" style="flex:1;min-width:130px"><label>Insurance Exp.</label><input id="a_ins" type="date"></div>
+                <div class="fld" style="flex:1;min-width:130px"><label>DOT Inspection Exp. <span style="color:#555;text-transform:none;letter-spacing:0">(§396.17)</span></label><input id="a_dot" type="date"></div>
+            </div>
+        </div>
+
+        <div class="roster-sub" style="margin:8px 0 10px">Preventive Maintenance <span style="color:#555;font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <div class="fld" style="flex:1;min-width:120px"><label>Service every (mi/hrs)</label><input id="a_pmInt" type="number" inputmode="numeric" placeholder="e.g. 5000"></div>
+            <div class="fld" style="flex:1;min-width:120px"><label>Last service at (mi/hrs)</label><input id="a_pmLast" type="number" inputmode="numeric" placeholder="e.g. 80000"></div>
+        </div>
+
+        <div class="roster-sub" style="margin:8px 0 10px">Replacement Math <span style="color:#555;font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <div class="fld" style="flex:1;min-width:120px"><label>Purchase / value ($)</label><input id="a_pp" type="number" inputmode="numeric" placeholder="e.g. 42000"></div>
+            <div class="fld" style="flex:1;min-width:120px"><label>In service since</label><input id="a_inservice" type="date"></div>
+        </div>
+
+        <div id="assetErr" style="color:#ef4444;font-family:var(--lab);font-size:12px;min-height:16px"></div>
+        <div class="mbtns">
+            <button class="cancel" id="aCancel">Cancel</button>
+            <button class="save" id="aSave">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- COST LOG MODAL -->
+<div class="modal" id="costModal">
+    <div class="mbox" style="max-width:540px">
+        <h3 id="costModalTitle">Vehicle Costs</h3>
+        <div id="costTotals" style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap"></div>
+
+        <div class="roster-sub" style="margin:0 0 10px">Add a cost</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <div class="fld" style="flex:1;min-width:110px"><label>Date</label><input id="ct_date" type="date"></div>
+            <div class="fld" style="flex:1;min-width:110px"><label>Category</label>
+                <select id="ct_cat">
+                    <option>Repair</option><option>Maintenance</option><option>Tires</option>
+                    <option>Registration</option><option>Insurance</option><option>Tow</option><option>Other</option>
+                </select></div>
+            <div class="fld" style="flex:1;min-width:90px"><label>Amount ($)</label><input id="ct_amt" type="number" inputmode="decimal" placeholder="0.00"></div>
+            <div class="fld" style="flex:1;min-width:80px"><label>Down days</label><input id="ct_down" type="number" inputmode="numeric" placeholder="0"></div>
+        </div>
+        <div class="fld"><label>What was it?</label><input id="ct_desc" type="text" placeholder="e.g. front brakes + rotors"></div>
+        <div id="costErr" style="color:#ef4444;font-family:var(--lab);font-size:12px;min-height:16px"></div>
+        <div style="display:flex;gap:10px;margin-bottom:18px">
+            <button class="save" id="ct_add" style="flex:1;font-family:var(--lab);font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:13px;border:none;cursor:pointer">+ Add Cost</button>
+        </div>
+
+        <div class="roster-sub" style="margin:0 0 10px">History</div>
+        <div id="costList" style="max-height:240px;overflow:auto"></div>
+        <div class="mbtns">
+            <button class="cancel" id="ctClose" style="flex:1;font-family:var(--lab);font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:13px;border:none;cursor:pointer">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- PHOTO LIGHTBOX -->
+<div id="lightbox" style="position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;padding:20px;cursor:zoom-out">
+    <img id="lightboxImg" alt="" style="max-width:100%;max-height:100%;object-fit:contain">
+</div>
+
+<!-- QR PRINT SHEET -->
+<div id="qrPrint"><div id="qrSheetInner"></div></div>
+
+<!-- FLEET STATUS REPORT (print) -->
+<div id="fleetPrint"></div>
+
+<!-- PHOTO LIGHTBOX END -->
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="firebase-config.js"></script>
+<script src="alerts-config.js"></script>
 <script src="checklists.js"></script>
 <script>
 (function(){
     const DEFAULT_PIN='2468';
-    let DATA={emps:{}, insp:{}}, editingId=null;
+    let DATA={emps:{}, insp:{}, workorders:{}, stock:{}, assets:{}, costs:{}}, editingId=null;
+    function money(n){ return '$'+Math.round((parseFloat(n)||0)).toLocaleString('en-US'); }
 
     // ── PIN gate ─────────────────────────────────────────────────────
     const gate=document.getElementById('gate'), pin=document.getElementById('pin');
@@ -279,6 +613,10 @@
         fleetRef('config/managerPin').once('value').then(s=>{ if(s.val()) DATA.managerPin=s.val(); });
         fleetRef('employees').on('value',s=>{ DATA.emps=s.val()||{}; paint(); });
         fleetRef('inspections').on('value',s=>{ DATA.insp=s.val()||{}; paint(); });
+        fleetRef('workorders').on('value',s=>{ DATA.workorders=s.val()||{}; paint(); });
+        fleetRef('stock').on('value',s=>{ DATA.stock=s.val()||{}; paintStock(); });
+        fleetRef('assets').on('value',s=>{ DATA.assets=s.val()||{}; paint(); });
+        fleetRef('costs').on('value',s=>{ DATA.costs=s.val()||{}; paintFleet(); });
     }
 
     function activeEmps(){
@@ -287,7 +625,7 @@
             .sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''));
     }
 
-    function paint(){ paintBoard(); paintAlerts(); paintRoster(); }
+    function paint(){ paintBoard(); paintAlerts(); paintRoster(); paintMaintenance(); paintFleet(); paintCompliance(); paintLeaderboard(); fillReportPeople(); }
 
     // ── BOARD ────────────────────────────────────────────────────────
     function paintBoard(){
@@ -312,7 +650,7 @@
                 const row=document.createElement('div'); row.className='row '+cls;
                 row.innerHTML=`<div>
                         <div class="nm">${e.name}</div>
-                        <div class="meta">${e.truckNumber?('Truck '+e.truckNumber):'No truck'}${e.truckType?(' · '+e.truckType):''}</div>
+                        <div class="meta">${c.label}${complianceWarn(e)}</div>
                     </div>
                     <div class="right">
                         <div class="status ${statusCls}">${statusTxt}</div>
@@ -357,7 +695,7 @@
                 : '<div class="status due">'+(c.cadence==='daily'?'Missed today':'Not done this week')+'</div>';
             row.innerHTML=`<div>
                     <div class="nm">${f.e.name}</div>
-                    <div class="meta">${c.label}${f.e.truckNumber?(' · Truck '+f.e.truckNumber):''}</div>
+                    <div class="meta">${c.label}</div>
                 </div>
                 <div class="right">${stat}<div class="when">${f.comp.label}</div></div><span class="arrow">›</span>`;
             row.onclick=()=>openHistory(f.id,f.e);
@@ -385,21 +723,47 @@
         const c=CREWS[e.crew]||{label:e.crew};
         const row=document.createElement('div'); row.className='rosterrow'+(isArch?' archived':'');
         let meta=c.label;
-        if(e.truckNumber) meta+=' · Truck '+e.truckNumber;
-        if(e.excavator) meta+=' · '+e.excavator;
         meta+= e.pin ? ' · PIN '+e.pin : ' · <span style="color:#a06a1a">No PIN</span>';
+        ['cdlExp','medExp'].forEach(k=>{
+            const lbl = k==='cdlExp'?'CDL':'Med';
+            const st=expiryStatus(e[k]);
+            if(st.status==='expired') meta+=` · <span style="color:#fca5a5">${lbl} expired</span>`;
+            else if(st.status==='soon') meta+=` · <span style="color:var(--amber)">${lbl} ${st.days}d</span>`;
+        });
         row.innerHTML=`<div><div class="nm">${e.name}</div><div class="meta">${meta}</div></div>
             <div class="acts">
+                ${isArch ? '' : '<button class="mini pinb">PIN</button>'}
                 <button class="mini edit">Edit</button>
                 ${isArch ? '<button class="mini rest">Restore</button>'
                          : '<button class="mini arch">Archive</button>'}
             </div>`;
         row.querySelector('.edit').onclick=()=>openModal(id,e);
+        if(!isArch) row.querySelector('.pinb').onclick=()=>openPinModal(id,e);
         if(isArch) row.querySelector('.rest').onclick=()=>setActive(id,true);
         else row.querySelector('.arch').onclick=()=>setActive(id,false);
         return row;
     }
     function setActive(id,val){ fleetRef('employees/'+id+'/active').set(val); }
+
+    // ── QUICK PIN MODAL ──────────────────────────────────────────────
+    const pinModal=document.getElementById('pinModal');
+    let pinEditId=null;
+    function openPinModal(id,e){
+        pinEditId=id;
+        document.getElementById('pinModalTitle').textContent='PIN — '+e.name;
+        document.getElementById('pm_pin').value=e.pin||'';
+        document.getElementById('pmErr').textContent='';
+        pinModal.classList.add('show');
+        setTimeout(()=>document.getElementById('pm_pin').focus(),80);
+    }
+    document.getElementById('pmCancel').onclick=()=>pinModal.classList.remove('show');
+    pinModal.onclick=(ev)=>{ if(ev.target===pinModal) pinModal.classList.remove('show'); };
+    document.getElementById('pmSave').onclick=()=>{
+        const v=document.getElementById('pm_pin').value.trim();
+        if(v && !/^\d{4}$/.test(v)){ document.getElementById('pmErr').textContent='Must be 4 digits (or blank to remove)'; return; }
+        fleetRef('employees/'+pinEditId+'/pin').set(v||null).then(()=>pinModal.classList.remove('show'));
+    };
+    document.getElementById('pm_pin').addEventListener('keypress',e=>{ if(e.key==='Enter') document.getElementById('pmSave').click(); });
 
     // ── MODAL (add/edit) ─────────────────────────────────────────────
     const modal=document.getElementById('modal');
@@ -407,10 +771,7 @@
     CREW_ORDER.forEach(cid=>{
         const o=document.createElement('option'); o.value=cid; o.textContent=CREWS[cid].label; fCrew.appendChild(o);
     });
-    function toggleHaulFlds(){
-        document.getElementById('haulFlds').style.display = CREWS[fCrew.value].hauls?'block':'none';
-    }
-    fCrew.onchange=toggleHaulFlds;
+    function toggleHaulFlds(){ /* truck fields moved to Fleet — nothing to toggle */ }
 
     document.getElementById('addBtn').onclick=()=>openModal(null,null);
     function openModal(id,e){
@@ -418,13 +779,10 @@
         document.getElementById('modalTitle').textContent=id?'Edit Crew Member':'Add Crew Member';
         document.getElementById('f_name').value=e?e.name||'':'';
         fCrew.value=e?e.crew||'underground':'underground';
-        document.getElementById('f_truck').value=e?e.truckNumber||'':'';
-        document.getElementById('f_type').value=e?e.truckType||'':'';
         document.getElementById('f_pin').value=e?e.pin||'':'';
-        document.getElementById('f_trailer').value=e?e.trailer||'':'';
-        document.getElementById('f_exc').value=e?e.excavator||'':'';
+        document.getElementById('f_cdl').value=e?e.cdlExp||'':'';
+        document.getElementById('f_med').value=e?e.medExp||'':'';
         document.getElementById('modalErr').textContent='';
-        toggleHaulFlds();
         modal.classList.add('show');
     }
     document.getElementById('mCancel').onclick=()=>modal.classList.remove('show');
@@ -440,10 +798,8 @@
         const rec={
             name, crew,
             pin: pinVal||null,
-            truckNumber:document.getElementById('f_truck').value.trim()||null,
-            truckType:document.getElementById('f_type').value.trim()||null,
-            trailer: CREWS[crew].hauls?(document.getElementById('f_trailer').value.trim()||null):null,
-            excavator: CREWS[crew].hauls?(document.getElementById('f_exc').value.trim()||null):null,
+            cdlExp: document.getElementById('f_cdl').value||null,
+            medExp: document.getElementById('f_med').value||null,
             active:true
         };
         if(editingId){
@@ -462,11 +818,13 @@
         const insp=DATA.insp[id]||{};
         const comp=complianceFor(e,insp);
 
+        let docLine='';
+        const cdl=expiryStatus(e.cdlExp), med=expiryStatus(e.medExp);
+        if(e.cdlExp) docLine+=` · CDL ${e.cdlExp}${cdl.status==='expired'?' (EXPIRED)':cdl.status==='soon'?' ('+cdl.days+'d)':''}`;
+        if(e.medExp) docLine+=` · Med ${e.medExp}${med.status==='expired'?' (EXPIRED)':med.status==='soon'?' ('+med.days+'d)':''}`;
         let head=`<div class="histhead">
             <div class="nm">${e.name}</div>
-            <div class="meta">${c.label}
-            ${e.truckNumber?(' · Truck '+e.truckNumber):''}${e.truckType?(' · '+e.truckType):''}
-            ${e.trailer?('<br>Trailer: '+e.trailer):''}${e.excavator?(' · '+e.excavator):''}
+            <div class="meta">${c.label}${docLine}
             <br>Status: ${comp.label}</div></div>`;
 
         // flatten runs (daily + weekly) across dates, newest first
@@ -488,7 +846,8 @@
             let defsHtml='';
             if(run.defects && run.defects.length){
                 defsHtml='<div class="defs">'+run.defects.map(d=>
-                    `<div class="d">${d.critical?'<b>CRITICAL — </b>':''}${d.item}${d.note?(' — '+escapeHtml(d.note)):''}</div>`
+                    `<div class="d">${d.critical?'<b>CRITICAL — </b>':''}${escapeHtml(d.item)}${d.note?(' — '+escapeHtml(d.note)):''}`
+                    +(d.photo?`<br><img class="dphoto" src="${d.photo}" alt="defect photo">`:'')+`</div>`
                 ).join('')+'</div>';
             }
             const typLabel=(run.type==='daily'?'Daily DVIR':'Weekly')+(run.hauling?' · hauling':'');
@@ -505,6 +864,692 @@
     }
 
     function escapeHtml(s){return (s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
+
+    // ══ MAINTENANCE / DEFECT QUEUE ═══════════════════════════════════
+    // Flatten every defect from every inspection into a work-order feed.
+    function buildDefects(){
+        const out=[];
+        Object.entries(DATA.insp).forEach(([empId,days])=>{
+            const e=DATA.emps[empId]; if(!e) return;
+            Object.entries(days).forEach(([dk,day])=>{
+                ['daily','weekly'].forEach(rt=>{
+                    const run=day[rt]; if(!run||!run.defects) return;
+                    run.defects.forEach((d,i)=>{
+                        const woId=`${empId}__${dk}__${rt}__${i}`;
+                        out.push({
+                            woId, empId, empName:e.name, crew:e.crew,
+                            truckNumber:run.truckNumber||null, date:dk, runType:rt,
+                            item:d.item, note:d.note, critical:!!d.critical, photo:d.photo||null,
+                            resolved: !!(DATA.workorders[woId] && DATA.workorders[woId].resolved),
+                            resolvedAt: DATA.workorders[woId] && DATA.workorders[woId].resolvedAt
+                        });
+                    });
+                });
+            });
+        });
+        // critical first, then newest date
+        out.sort((a,b)=> (b.critical-a.critical) || b.date.localeCompare(a.date));
+        return out;
+    }
+    let maintFilter='open';
+    document.querySelectorAll('#maintFilter .segbtn').forEach(b=>{
+        b.onclick=()=>{ maintFilter=b.dataset.f;
+            document.querySelectorAll('#maintFilter .segbtn').forEach(x=>x.classList.toggle('active',x===b));
+            paintMaintenance(); };
+    });
+    function paintMaintenance(){
+        const all=buildDefects();
+        const open=all.filter(d=>!d.resolved);
+        const badge=document.getElementById('maintBadge');
+        if(open.length){ badge.textContent=open.length; badge.classList.remove('hidden'); }
+        else badge.classList.add('hidden');
+
+        const list = maintFilter==='open' ? open : all.filter(d=>d.resolved);
+        const body=document.getElementById('maintBody'); body.innerHTML='';
+        if(!list.length){
+            body.innerHTML='<div class="empty">'+(maintFilter==='open'
+                ? '✓ No open maintenance items.' : 'Nothing marked fixed yet.')+'</div>';
+            return;
+        }
+        list.forEach(d=>{
+            const c=CREWS[d.crew]||{label:d.crew};
+            const row=document.createElement('div');
+            row.className='wo'+(d.critical?' crit':'')+(d.resolved?' done':'');
+            row.innerHTML=`
+                <div class="top">
+                    <span class="item">${escapeHtml(d.item)}</span>
+                    ${d.critical?'<span class="critflag">Critical · Rig down</span>':''}
+                    <span class="who">${escapeHtml(d.empName)}<br>${c.label}${d.truckNumber?(' · Truck '+d.truckNumber):''}</span>
+                </div>
+                ${d.note?`<div class="note"><b>Reported:</b> ${escapeHtml(d.note)}</div>`:''}
+                <div class="note"><b>Found:</b> ${prettyDate(d.date)} · ${d.runType==='daily'?'Daily check':'Weekly check'}</div>
+                ${d.photo?`<div><img class="dphoto" src="${d.photo}" alt="defect photo"></div>`:''}
+                <div class="acts"></div>`;
+            const acts=row.querySelector('.acts');
+            const btn=document.createElement('button'); btn.className='mini';
+            if(d.resolved){ btn.classList.add('rest'); btn.textContent='Reopen';
+                btn.onclick=()=>fleetRef('workorders/'+d.woId).set(null); }
+            else { btn.classList.add('arch'); btn.textContent='✓ Mark fixed';
+                btn.onclick=()=>fleetRef('workorders/'+d.woId).set({resolved:true,resolvedAt:Date.now()}); }
+            acts.appendChild(btn);
+            body.appendChild(row);
+        });
+    }
+
+    // ══ REPORTS ══════════════════════════════════════════════════════
+    function fillReportPeople(){
+        const sel=document.getElementById('rpPerson');
+        const cur=sel.value;
+        sel.innerHTML='';
+        const gP=document.createElement('optgroup'); gP.label='People';
+        Object.entries(DATA.emps).sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''))
+            .forEach(([id,e])=>{ const o=document.createElement('option'); o.value='P:'+id;
+                o.textContent=e.name+(e.active?'':' (archived)'); gP.appendChild(o); });
+        sel.appendChild(gP);
+        const gV=document.createElement('optgroup'); gV.label='Vehicles / Assets';
+        Object.entries(DATA.assets).sort((a,b)=>assetLabel(a[1]).localeCompare(assetLabel(b[1])))
+            .forEach(([id,a])=>{ const o=document.createElement('option'); o.value='A:'+id;
+                o.textContent=assetLabel(a)+(a.active===false?' (archived)':''); gV.appendChild(o); });
+        if(Object.keys(DATA.assets).length) sel.appendChild(gV);
+        if(cur) sel.value=cur;
+    }
+    let rpMode='day';
+    document.querySelectorAll('#rpMode .segbtn').forEach(b=>{
+        b.onclick=()=>{ rpMode=b.dataset.m;
+            document.querySelectorAll('#rpMode .segbtn').forEach(x=>x.classList.toggle('active',x===b));
+            document.getElementById('rpDayWrap').classList.toggle('hidden',rpMode!=='day');
+            document.getElementById('rpMonthWrap').classList.toggle('hidden',rpMode!=='month');
+        };
+    });
+    document.getElementById('rpDay').value=dateKey();
+    document.getElementById('rpMonth').value=dateKey().slice(0,7);
+    document.getElementById('rpGo').onclick=generateReport;
+    document.getElementById('rpPrint').onclick=()=>window.print();
+
+    function reportScope(){
+        if(rpMode==='day'){
+            const d=document.getElementById('rpDay').value;
+            return { label:d?prettyDate(d):'(no date)', match:k=>k===d };
+        }
+        const m=document.getElementById('rpMonth').value;
+        const [yy,mm]=m.split('-');
+        return { label:new Date(+yy,+mm-1,1).toLocaleDateString('en-US',{month:'long',year:'numeric'}), match:k=>k.startsWith(m) };
+    }
+    function runRowHtml(date,rt,run,whoExtra){
+        let res,cls;
+        if(run.criticalCount>0){ res='CRITICAL ('+run.criticalCount+')'; cls='crit'; }
+        else if(run.defectCount>0){ res=run.defectCount+' defect'+(run.defectCount>1?'s':''); cls='def'; }
+        else { res='All clear'; cls='ok'; }
+        const defs = (run.defects&&run.defects.length)
+            ? run.defects.map(d=>(d.critical?'⚠ ':'')+escapeHtml(d.item)+(d.note?(' — '+escapeHtml(d.note)):'')
+                +(d.photo?`<br><img class="dphoto" src="${d.photo}" alt="">`:'')).join('<br>')
+            : '—';
+        return `<tr>
+            <td>${prettyDate(date)}</td>
+            <td>${rt==='daily'?'Daily DVIR'+(run.hauling?' (hauling)':''):'Weekly'}${whoExtra?('<br><span style="color:#666">'+whoExtra+'</span>'):''}</td>
+            <td class="${cls}">${res}</td>
+            <td>${defs}</td>
+            <td>${run.odometer?escapeHtml(String(run.odometer)):'—'}</td>
+        </tr>`;
+    }
+    function reportShell(title, metaHtml, rows){
+        document.getElementById('reportArea').innerHTML=`<div class="report" id="reportDoc">
+            <h2>${title}</h2>
+            <div class="rsub">Action Plumbing — Fleet Maintenance</div>
+            <div class="rmeta">${metaHtml}</div>
+            <table>
+                <thead><tr><th>Date</th><th>Check</th><th>Result</th><th>Defects / Notes</th><th>Odo/Hrs</th></tr></thead>
+                <tbody>${rows||'<tr><td colspan="5" class="rnone">No checks logged in this period.</td></tr>'}</tbody>
+            </table>
+            <div class="sig"><div>Driver signature</div><div>Manager signature</div></div>
+        </div>`;
+        document.getElementById('rpPrint').style.display='inline-block';
+    }
+    function generateReport(){
+        const val=document.getElementById('rpPerson').value||'';
+        const area=document.getElementById('reportArea');
+        if(!val){ area.innerHTML='<div class="empty">Add a person or vehicle first.</div>'; return; }
+        const scope=reportScope();
+        const genLine=`Period: <b>${scope.label}</b> &nbsp;·&nbsp; Generated ${new Date().toLocaleDateString('en-US')}`;
+
+        if(val.startsWith('P:')){
+            const empId=val.slice(2), e=DATA.emps[empId];
+            if(!e){ area.innerHTML='<div class="empty">Not found.</div>'; return; }
+            const c=CREWS[e.crew]||{label:e.crew};
+            const days=DATA.insp[empId]||{};
+            let rows='';
+            Object.keys(days).filter(scope.match).sort().forEach(dk=>{
+                ['daily','weekly'].forEach(rt=>{ if(days[dk][rt]){
+                    const r=days[dk][rt];
+                    const truck=r.truckNumber?('Truck '+r.truckNumber):(r.truckLabel||'');
+                    rows+=runRowHtml(dk,rt,r,truck);
+                }});
+            });
+            let docLine='';
+            if(e.cdlExp) docLine+=`<br>CDL exp: ${e.cdlExp}`;
+            if(e.medExp) docLine+=` · DOT Med exp: ${e.medExp}`;
+            reportShell('Driver Inspection Report',
+                `<b>${escapeHtml(e.name)}</b> &nbsp;·&nbsp; ${c.label}${docLine}<br>${genLine}`, rows);
+        } else {
+            const assetId=val.slice(2), a=DATA.assets[assetId];
+            if(!a){ area.innerHTML='<div class="empty">Not found.</div>'; return; }
+            // gather runs referencing this asset across all employees
+            const runs=[];
+            Object.entries(DATA.insp).forEach(([empId,days])=>{
+                const e=DATA.emps[empId];
+                Object.keys(days).filter(scope.match).forEach(dk=>{
+                    ['daily','weekly'].forEach(rt=>{
+                        const r=days[dk][rt]; if(!r) return;
+                        if(r.truckId===assetId || r.trailerId===assetId || r.excavatorId===assetId)
+                            runs.push({dk,rt,r,who:e?e.name:''});
+                    });
+                });
+            });
+            runs.sort((x,y)=> x.dk.localeCompare(y.dk));
+            let rows=''; runs.forEach(({dk,rt,r,who})=>rows+=runRowHtml(dk,rt,r,who?('by '+who):''));
+            const odo=assetOdometer(assetId, DATA.insp);
+            let docLine='';
+            if(ASSET_TYPES[a.type] && ASSET_TYPES[a.type].docs){
+                docLine=`<br>Registration: ${a.regExp||'—'} · Insurance: ${a.insExp||'—'} · DOT Insp: ${a.dotInspExp||'—'}`;
+            }
+            const pm=pmStatus(a, odo);
+            const pmLine = pm.status==='none' ? '' :
+                `<br>Odometer/hrs: ${odo||'—'}${pm.status!=='none'?(' · Next service in ~'+Math.max(0,pm.milesLeft)+' mi'+(pm.status==='due'?' (DUE)':pm.status==='soon'?' (soon)':'')):''}`;
+            reportShell('Vehicle Inspection Report',
+                `<b>${escapeHtml(assetLabel(a))}</b> &nbsp;·&nbsp; ${CREWS[a.crew]?CREWS[a.crew].label:a.crew}${docLine}${pmLine}<br>${genLine}`, rows);
+        }
+    }
+
+    // ══ TRUCK STOCK (per crew) ═══════════════════════════════════════
+    const stCrew=document.getElementById('stCrew');
+    CREW_ORDER.forEach(cid=>{ const o=document.createElement('option'); o.value=cid; o.textContent=CREWS[cid].label; stCrew.appendChild(o); });
+    stCrew.value='underground';
+    stCrew.onchange=paintStock;
+
+    function paintStock(){
+        const crew=stCrew.value;
+        const items=DATA.stock[crew]||{};
+        const body=document.getElementById('stockBody'); body.innerHTML='';
+        const entries=Object.entries(items).sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''));
+        if(!entries.length){
+            body.innerHTML='<div class="empty">No stock items for '+CREWS[crew].label+' yet. Add one above.</div>'; return;
+        }
+        entries.forEach(([iid,it])=>{
+            const row=document.createElement('div'); row.className='stockrow';
+            row.innerHTML=`<div><div class="nm">${escapeHtml(it.name)}</div>
+                ${it.note?`<div class="sub">${escapeHtml(it.note)}</div>`:''}</div>
+                <div class="par">${it.par!=null&&it.par!==''?escapeHtml(String(it.par)):'—'}<small>Par</small></div>
+                <div class="acts">
+                    <button class="mini edit">Edit</button>
+                    <button class="mini arch">Remove</button>
+                </div>`;
+            row.querySelector('.edit').onclick=()=>openStockModal(crew,iid,it);
+            row.querySelector('.arch').onclick=()=>{ if(confirm('Remove "'+it.name+'" from '+CREWS[crew].label+' stock?')) fleetRef('stock/'+crew+'/'+iid).set(null); };
+            body.appendChild(row);
+        });
+    }
+    const stockModal=document.getElementById('stockModal');
+    let stEditCrew=null, stEditId=null;
+    document.getElementById('stAdd').onclick=()=>openStockModal(stCrew.value,null,null);
+    function openStockModal(crew,iid,it){
+        stEditCrew=crew; stEditId=iid;
+        document.getElementById('stockModalTitle').textContent=(iid?'Edit':'Add')+' Stock — '+CREWS[crew].label;
+        document.getElementById('sk_name').value=it?it.name||'':'';
+        document.getElementById('sk_par').value=it&&it.par!=null?it.par:'';
+        document.getElementById('sk_note').value=it?it.note||'':'';
+        document.getElementById('skErr').textContent='';
+        stockModal.classList.add('show');
+        setTimeout(()=>document.getElementById('sk_name').focus(),80);
+    }
+    document.getElementById('skCancel').onclick=()=>stockModal.classList.remove('show');
+    stockModal.onclick=(ev)=>{ if(ev.target===stockModal) stockModal.classList.remove('show'); };
+    document.getElementById('skSave').onclick=()=>{
+        const name=document.getElementById('sk_name').value.trim();
+        if(!name){ document.getElementById('skErr').textContent='Item name is required'; return; }
+        const rec={
+            name,
+            par: document.getElementById('sk_par').value.trim()||null,
+            note: document.getElementById('sk_note').value.trim()||null
+        };
+        const base=fleetRef('stock/'+stEditCrew);
+        const p = stEditId ? base.child(stEditId).update(rec) : base.push({...rec,createdAt:Date.now()});
+        p.then(()=>stockModal.classList.remove('show'));
+    };
+
+    // ══ FLEET (asset registry) ═══════════════════════════════════════
+    const flCrew=document.getElementById('flCrew');
+    CREW_ORDER.forEach(cid=>{ const o=document.createElement('option'); o.value=cid; o.textContent=CREWS[cid].label; flCrew.appendChild(o); });
+    flCrew.value='underground';
+    flCrew.onchange=paintFleet;
+
+    function expBadge(label, dateStr){
+        const st=expiryStatus(dateStr);
+        let txt;
+        if(st.status==='none') txt=label+': —';
+        else if(st.status==='expired') txt=label+' EXPIRED';
+        else if(st.status==='soon') txt=label+' '+st.days+'d';
+        else txt=label+' ✓';
+        return `<span class="exp ${st.status}">${txt}</span>`;
+    }
+    function paintFleet(){
+        const crew=flCrew.value;
+        const body=document.getElementById('fleetBody'); body.innerHTML='';
+        const list=Object.entries(DATA.assets).filter(([id,a])=>a.crew===crew);
+        if(!list.length){ body.innerHTML='<div class="empty">No vehicles/assets for '+CREWS[crew].label+' yet. Add one above.</div>'; return; }
+
+        const types=CREW_ASSET_TYPES[crew]||ASSET_TYPE_ORDER;
+        types.forEach(tp=>{
+            const items=list.filter(([id,a])=>a.type===tp)
+                .sort((a,b)=>String(a[1].number||'').localeCompare(String(b[1].number||''),undefined,{numeric:true}));
+            if(!items.length) return;
+            const T=ASSET_TYPES[tp];
+            const h=document.createElement('div'); h.className='fleet-sub';
+            h.innerHTML=`<span>${T.glyph}</span> ${T.label}s`;
+            body.appendChild(h);
+            items.forEach(([id,a])=>body.appendChild(assetRow(id,a)));
+        });
+        // any asset whose type isn't in the crew's normal list
+        const others=list.filter(([id,a])=>!types.includes(a.type));
+        if(others.length){
+            const h=document.createElement('div'); h.className='fleet-sub'; h.textContent='Other';
+            body.appendChild(h); others.forEach(([id,a])=>body.appendChild(assetRow(id,a)));
+        }
+    }
+    function assetRow(id,a){
+        const T=ASSET_TYPES[a.type]||{label:a.type,glyph:'•',docs:false};
+        const row=document.createElement('div'); row.className='asset'+(a.active===false?' archived':'');
+        let badges='';
+        if(T.docs){
+            badges+=expBadge('Reg', a.regExp)+expBadge('Ins', a.insExp)+expBadge('DOT', a.dotInspExp);
+        }
+        // PM
+        const odo=assetOdometer(id, DATA.insp);
+        const pm=pmStatus(a, odo);
+        if(pm.status!=='none'){
+            const cls = pm.status==='due'?'due':pm.status==='soon'?'soon':'ok';
+            const txt = pm.status==='due'?('Service DUE ('+Math.abs(pm.milesLeft)+' over)')
+                      : pm.status==='soon'?('Service in '+pm.milesLeft)
+                      : ('Service in '+pm.milesLeft);
+            badges+=`<span class="exp ${cls}">🔧 ${txt}</span>`;
+        }
+        // cost
+        const ct=assetCostTotals(DATA.costs[id]);
+        const rs=replaceSignal(a, ct.total);
+        if(ct.total>0 || a.purchasePrice){
+            let ctxt='💲 '+money(ct.total)+' total';
+            if(rs.pct!=null) ctxt+=' · '+rs.pct+'% of value';
+            badges+=`<span class="costbadge ${rs.flag?'warn':''}">${ctxt}</span>`;
+            if(rs.flag) badges+=`<span class="costbadge warn">⚠ Consider replacing</span>`;
+        }
+        row.innerHTML=`<div class="top">
+                <span class="glyph">${T.glyph}</span>
+                <span class="nm">${T.label} ${escapeHtml(a.number||'')}</span>
+                <span class="kind" style="color:var(--muted);font-family:var(--lab);font-size:11px">${escapeHtml(a.name||'')}</span>
+                <div class="acts">
+                    <button class="mini cost">💲 Costs</button>
+                    <button class="mini edit">Edit</button>
+                    <button class="mini ${a.active===false?'rest':'arch'}">${a.active===false?'Restore':'Archive'}</button>
+                </div>
+            </div>
+            <div class="badges">${badges||'<span class="exp none">No dates set</span>'}</div>`;
+        row.querySelector('.edit').onclick=()=>openAssetModal(id,a);
+        row.querySelector('.cost').onclick=()=>openCostModal(id,a);
+        const tog=row.querySelector('.arch,.rest');
+        tog.onclick=()=>fleetRef('assets/'+id+'/active').set(a.active===false);
+        return row;
+    }
+
+    // asset modal
+    const assetModal=document.getElementById('assetModal');
+    const aType=document.getElementById('a_type'), aCrew=document.getElementById('a_crew');
+    ASSET_TYPE_ORDER.forEach(tp=>{ const o=document.createElement('option'); o.value=tp; o.textContent=ASSET_TYPES[tp].label; aType.appendChild(o); });
+    CREW_ORDER.forEach(cid=>{ const o=document.createElement('option'); o.value=cid; o.textContent=CREWS[cid].label; aCrew.appendChild(o); });
+    function toggleAssetDocs(){ document.getElementById('a_docs').style.display = ASSET_TYPES[aType.value].docs?'block':'none'; }
+    aType.onchange=toggleAssetDocs;
+    let assetEditId=null;
+    document.getElementById('flAdd').onclick=()=>openAssetModal(null,null);
+    function openAssetModal(id,a){
+        assetEditId=id;
+        document.getElementById('assetModalTitle').textContent=id?'Edit Vehicle / Asset':'Add Vehicle / Asset';
+        aType.value=a?a.type||'truck':'truck';
+        aCrew.value=a?a.crew||flCrew.value:flCrew.value;
+        document.getElementById('a_number').value=a?a.number||'':'';
+        document.getElementById('a_name').value=a?a.name||'':'';
+        document.getElementById('a_reg').value=a?a.regExp||'':'';
+        document.getElementById('a_ins').value=a?a.insExp||'':'';
+        document.getElementById('a_dot').value=a?a.dotInspExp||'':'';
+        document.getElementById('a_pmInt').value=a&&a.pmIntervalMiles!=null?a.pmIntervalMiles:'';
+        document.getElementById('a_pmLast').value=a&&a.pmLastServiceMiles!=null?a.pmLastServiceMiles:'';
+        document.getElementById('a_pp').value=a&&a.purchasePrice!=null?a.purchasePrice:'';
+        document.getElementById('a_inservice').value=a?a.inServiceDate||'':'';
+        document.getElementById('assetErr').textContent='';
+        toggleAssetDocs();
+        assetModal.classList.add('show');
+    }
+    document.getElementById('aCancel').onclick=()=>assetModal.classList.remove('show');
+    assetModal.onclick=(ev)=>{ if(ev.target===assetModal) assetModal.classList.remove('show'); };
+    document.getElementById('aSave').onclick=()=>{
+        const number=document.getElementById('a_number').value.trim();
+        const nm=document.getElementById('a_name').value.trim();
+        if(!number && !nm){ document.getElementById('assetErr').textContent='Add a unit number or description'; return; }
+        const type=aType.value;
+        const rec={
+            type, crew:aCrew.value, number:number||null, name:nm||null,
+            regExp: ASSET_TYPES[type].docs?(document.getElementById('a_reg').value||null):null,
+            insExp: ASSET_TYPES[type].docs?(document.getElementById('a_ins').value||null):null,
+            dotInspExp: ASSET_TYPES[type].docs?(document.getElementById('a_dot').value||null):null,
+            pmIntervalMiles: document.getElementById('a_pmInt').value.trim()||null,
+            pmLastServiceMiles: document.getElementById('a_pmLast').value.trim()||null,
+            purchasePrice: document.getElementById('a_pp').value.trim()||null,
+            inServiceDate: document.getElementById('a_inservice').value||null,
+            active:true
+        };
+        const base=fleetRef('assets');
+        const p = assetEditId ? base.child(assetEditId).update(rec) : base.push({...rec,createdAt:Date.now()});
+        p.then(()=>assetModal.classList.remove('show'));
+    };
+
+    // ══ VEHICLE COSTS ════════════════════════════════════════════════
+    const costModal=document.getElementById('costModal');
+    let costAssetId=null;
+    function openCostModal(id,a){
+        costAssetId=id;
+        document.getElementById('costModalTitle').textContent='Costs — '+assetLabel(a);
+        document.getElementById('ct_date').value=dateKey();
+        document.getElementById('ct_cat').value='Repair';
+        document.getElementById('ct_amt').value='';
+        document.getElementById('ct_down').value='';
+        document.getElementById('ct_desc').value='';
+        document.getElementById('costErr').textContent='';
+        renderCostLog(id,a);
+        costModal.classList.add('show');
+    }
+    function renderCostLog(id,a){
+        const costs=DATA.costs[id]||{};
+        const tot=assetCostTotals(costs);
+        const rs=replaceSignal(a, tot.total);
+        const tEl=document.getElementById('costTotals');
+        tEl.innerHTML=
+            `<div class="card r" style="flex:1;min-width:120px;padding:13px 15px"><div class="n" style="font-size:30px">${money(tot.total)}</div><div class="l">Lifetime cost</div></div>`+
+            `<div class="card a" style="flex:1;min-width:120px;padding:13px 15px"><div class="n" style="font-size:30px">${money(tot.year)}</div><div class="l">This year</div></div>`+
+            `<div class="card g" style="flex:1;min-width:120px;padding:13px 15px"><div class="n" style="font-size:30px">${tot.downDays}</div><div class="l">Down days</div></div>`+
+            (rs.pct!=null?`<div class="card ${rs.flag?'r':'g'}" style="flex:1;min-width:120px;padding:13px 15px"><div class="n" style="font-size:30px">${rs.pct}%</div><div class="l">of vehicle value${rs.flag?' · replace':''}</div></div>`:'');
+
+        const list=document.getElementById('costList');
+        const entries=Object.entries(costs).sort((x,y)=>(y[1].date||'').localeCompare(x[1].date||''));
+        if(!entries.length){ list.innerHTML='<div class="empty">No costs logged yet.</div>'; return; }
+        list.innerHTML='';
+        entries.forEach(([eid,c])=>{
+            const row=document.createElement('div'); row.className='rosterrow';
+            row.innerHTML=`<div><div class="nm" style="font-size:18px">${money(c.amount)} · ${escapeHtml(c.category||'')}</div>
+                <div class="meta">${c.date?prettyDate(c.date):''}${c.desc?(' · '+escapeHtml(c.desc)):''}${c.downDays?(' · '+c.downDays+' down days'):''}</div></div>
+                <div class="acts"><button class="mini arch">Delete</button></div>`;
+            row.querySelector('.arch').onclick=()=>{ if(confirm('Delete this cost entry?')) fleetRef('costs/'+id+'/'+eid).set(null).then(()=>{ renderCostLog(id, DATA.assets[id]||a); }); };
+            list.appendChild(row);
+        });
+    }
+    document.getElementById('ct_add').onclick=()=>{
+        const amt=document.getElementById('ct_amt').value.trim();
+        if(!amt || isNaN(parseFloat(amt))){ document.getElementById('costErr').textContent='Enter an amount'; return; }
+        const rec={
+            date: document.getElementById('ct_date').value||dateKey(),
+            category: document.getElementById('ct_cat').value,
+            amount: parseFloat(amt),
+            downDays: document.getElementById('ct_down').value.trim()||null,
+            desc: document.getElementById('ct_desc').value.trim()||null,
+            at: Date.now()
+        };
+        fleetRef('costs/'+costAssetId).push(rec).then(()=>{
+            document.getElementById('ct_amt').value='';
+            document.getElementById('ct_desc').value='';
+            document.getElementById('ct_down').value='';
+            document.getElementById('costErr').textContent='';
+            renderCostLog(costAssetId, DATA.assets[costAssetId]||{});
+        });
+    };
+    document.getElementById('ctClose').onclick=()=>costModal.classList.remove('show');
+    costModal.onclick=(ev)=>{ if(ev.target===costModal) costModal.classList.remove('show'); };
+
+    // ══ FLEET STATUS REPORT (printable) ══════════════════════════════
+    document.getElementById('flReport').onclick=buildFleetReport;
+    function buildFleetReport(){
+        const assets=Object.entries(DATA.assets).filter(([id,a])=>a.active!==false);
+        // build rows with an urgency score so the worst float to the top
+        const rows=assets.map(([id,a])=>{
+            const T=ASSET_TYPES[a.type]||{label:a.type,docs:false};
+            const reg=expiryStatus(a.regExp), ins=expiryStatus(a.insExp), dot=expiryStatus(a.dotInspExp);
+            const odo=assetOdometer(id, DATA.insp); const pm=pmStatus(a,odo);
+            const ct=assetCostTotals(DATA.costs[id]); const rs=replaceSignal(a, ct.total);
+            // open defects for this asset
+            let openDef=0;
+            Object.entries(DATA.insp).forEach(([eid,days])=>Object.entries(days).forEach(([dk,day])=>['daily','weekly'].forEach(rt=>{
+                const r=day[rt]; if(r&&r.truckId===id&&r.defects) r.defects.forEach((d,i)=>{ const wo=DATA.workorders[`${eid}__${dk}__${rt}__${i}`]; if(!(wo&&wo.resolved)) openDef++; });
+            })));
+            let urgency=0;
+            [reg,ins,dot].forEach(s=>{ if(s.status==='expired')urgency+=100; else if(s.status==='soon')urgency+=40; });
+            if(pm.status==='due')urgency+=50; else if(pm.status==='soon')urgency+=20;
+            if(rs.flag)urgency+=60;
+            urgency+=openDef*10;
+            return {id,a,T,reg,ins,dot,pm,ct,rs,odo,openDef,urgency};
+        }).sort((x,y)=>y.urgency-x.urgency || assetLabel(x.a).localeCompare(assetLabel(y.a)));
+
+        const fmt=(s,dateStr)=> !dateStr ? '<span style="color:#999">—</span>'
+            : s.status==='expired' ? `<span style="color:#b91c1c;font-weight:700">${dateStr} (EXPIRED)</span>`
+            : s.status==='soon' ? `<span style="color:#b45309;font-weight:700">${dateStr} (${s.days}d)</span>`
+            : dateStr;
+
+        let body='';
+        if(!rows.length){ body=`<tr><td colspan="7" class="rnone">No active vehicles.</td></tr>`; }
+        rows.forEach(r=>{
+            const notes=[];
+            if(r.pm.status==='due') notes.push('Service DUE');
+            else if(r.pm.status==='soon') notes.push('Service soon');
+            if(r.rs.flag) notes.push('REPLACE — repairs '+r.rs.pct+'% of value');
+            if(r.openDef) notes.push(r.openDef+' open defect'+(r.openDef>1?'s':''));
+            body+=`<tr>
+                <td><b>${escapeHtml(r.T.label+' '+(r.a.number||''))}</b><br><span style="color:#666">${escapeHtml(r.a.name||'')}</span></td>
+                <td>${CREWS[r.a.crew]?CREWS[r.a.crew].label:escapeHtml(r.a.crew||'')}</td>
+                <td>${r.T.docs?fmt(r.reg,r.a.regExp):'<span style="color:#999">n/a</span>'}</td>
+                <td>${r.T.docs?fmt(r.ins,r.a.insExp):'<span style="color:#999">n/a</span>'}</td>
+                <td>${r.T.docs?fmt(r.dot,r.a.dotInspExp):'<span style="color:#999">n/a</span>'}</td>
+                <td><b>${money(r.ct.total)}</b>${r.ct.year?('<br><span style="color:#666">'+money(r.ct.year)+' this yr</span>'):''}${r.ct.downDays?('<br><span style="color:#666">'+r.ct.downDays+' down days</span>'):''}</td>
+                <td>${notes.length?notes.map(n=>n.startsWith('REPLACE')?('<span style="color:#b91c1c;font-weight:700">'+n+'</span>'):n).join('<br>'):'<span style="color:#157a3a">OK</span>'}</td>
+            </tr>`;
+        });
+
+        const html=`<div class="report">
+            <h2>Fleet Status Report</h2>
+            <div class="rsub">Action Plumbing — Vehicle Compliance, Maintenance &amp; Cost</div>
+            <div class="rmeta">Generated ${new Date().toLocaleString('en-US')} · ${rows.length} active vehicle(s) · sorted by what needs attention first</div>
+            <table>
+                <thead><tr><th>Vehicle</th><th>Crew</th><th>Registration</th><th>Insurance</th><th>DOT Insp</th><th>Cost</th><th>Notes</th></tr></thead>
+                <tbody>${body}</tbody>
+            </table>
+        </div>`;
+        document.getElementById('fleetReportArea').innerHTML=html+
+            '<button class="mini edit no-print" id="flPrintBtn" style="margin-top:14px;padding:13px 18px">🖨 Print this report</button>';
+        document.getElementById('fleetPrint').innerHTML=html;
+        document.getElementById('flPrintBtn').onclick=()=>{
+            document.body.classList.add('print-fleet'); setTimeout(()=>window.print(),100);
+        };
+        document.getElementById('fleetReportArea').scrollIntoView({behavior:'smooth'});
+    }
+    window.addEventListener('afterprint',()=>document.body.classList.remove('print-fleet'));
+
+    // ══ COMPLIANCE (expirations + PM due) ════════════════════════════
+    function buildCompliance(){
+        const out=[];
+        // truck/van docs
+        Object.entries(DATA.assets).forEach(([id,a])=>{
+            if(a.active===false) return;
+            const T=ASSET_TYPES[a.type]||{docs:false};
+            if(T.docs){
+                [['Registration','regExp'],['Insurance','insExp'],['DOT Inspection (§396.17)','dotInspExp']].forEach(([lbl,key])=>{
+                    const st=expiryStatus(a[key]);
+                    if(st.status==='expired'||st.status==='soon')
+                        out.push({ who:assetLabel(a), kind:lbl, status:st.status, days:st.days, crew:a.crew });
+                });
+            }
+            // PM
+            const odo=assetOdometer(id, DATA.insp);
+            const pm=pmStatus(a, odo);
+            if(pm.status==='due'||pm.status==='soon')
+                out.push({ who:assetLabel(a), kind:'Preventive service'+(pm.status==='due'?' (DUE)':''),
+                    status: pm.status==='due'?'due':'soon',
+                    days:null, extra:(pm.status==='due'?Math.abs(pm.milesLeft)+' mi over':pm.milesLeft+' mi left'), crew:a.crew });
+        });
+        // driver docs
+        Object.entries(DATA.emps).forEach(([id,e])=>{
+            if(!e.active) return;
+            [['CDL','cdlExp'],['DOT Medical Card (§391.45)','medExp']].forEach(([lbl,key])=>{
+                const st=expiryStatus(e[key]);
+                if(st.status==='expired'||st.status==='soon')
+                    out.push({ who:e.name, kind:lbl, status:st.status, days:st.days, crew:e.crew });
+            });
+        });
+        // expired first, then soonest
+        const rank=s=>s==='expired'||s==='due'?0:1;
+        out.sort((a,b)=> rank(a.status)-rank(b.status) || ((a.days==null?9999:a.days)-(b.days==null?9999:b.days)));
+        return out;
+    }
+    function paintCompliance(){
+        const items=buildCompliance();
+        const badge=document.getElementById('compBadge');
+        if(items.length){ badge.textContent=items.length; badge.classList.remove('hidden'); }
+        else badge.classList.add('hidden');
+        const body=document.getElementById('complianceBody'); body.innerHTML='';
+        if(!items.length){ body.innerHTML='<div class="empty">✓ Everything current. Nothing expiring in 30 days.</div>'; return; }
+        items.forEach(it=>{
+            const isExp = it.status==='expired'||it.status==='due';
+            const row=document.createElement('div'); row.className='crow '+(isExp?(it.status==='due'?'due':'expired'):'soon');
+            const resTxt = it.status==='expired' ? 'Expired '+Math.abs(it.days)+'d ago'
+                         : it.status==='due' ? (it.extra||'Due now')
+                         : it.days!=null ? ('In '+it.days+' days') : (it.extra||'Soon');
+            row.innerHTML=`<div class="top">
+                <span class="who">${escapeHtml(it.who)}</span>
+                <span class="kind">${escapeHtml(it.kind)}${it.crew?(' · '+(CREWS[it.crew]?CREWS[it.crew].label:it.crew)):''}</span>
+                <span class="res ${isExp?'exp':'sn'}">${resTxt}</span>
+            </div>`;
+            body.appendChild(row);
+        });
+    }
+    // small inline warning used on the Board rows
+    function complianceWarn(e){
+        const cdl=expiryStatus(e.cdlExp), med=expiryStatus(e.medExp);
+        if(cdl.status==='expired'||med.status==='expired') return ' · <span style="color:#fca5a5">⚠ doc expired</span>';
+        if(cdl.status==='soon'||med.status==='soon') return ' · <span style="color:var(--amber)">⚠ doc due</span>';
+        return '';
+    }
+
+    // ══ LEADERBOARD (streaks) ════════════════════════════════════════
+    function paintLeaderboard(){
+        const rows=activeEmps().map(([id,e])=>{
+            const st=streakFor(e, DATA.insp[id]);
+            return { id, e, st };
+        });
+        // rank by current streak, then on-time %, then best
+        rows.sort((a,b)=> (b.st.current-a.st.current) || (b.st.onTimePct-a.st.onTimePct) || (b.st.longest-a.st.longest));
+
+        const body=document.getElementById('leaderboardBody'); body.innerHTML='';
+        if(!rows.length){ body.innerHTML='<div class="empty">Add crew to see standings.</div>';
+            document.getElementById('lbTopName').textContent='—';
+            document.getElementById('lbTeamPct').textContent='—'; return; }
+
+        // header cards
+        const best=[...rows].sort((a,b)=>b.st.current-a.st.current)[0];
+        document.getElementById('lbTopName').textContent = best.st.current>0 ? (best.e.name+' · '+best.st.current+'🔥') : 'No active streaks';
+        const avg=Math.round(rows.reduce((s,r)=>s+r.st.onTimePct,0)/rows.length);
+        document.getElementById('lbTeamPct').textContent = avg+'%';
+
+        rows.forEach((r,i)=>{
+            const c=CREWS[r.e.crew]||{label:r.e.crew};
+            const row=document.createElement('div'); row.className='lbrow'+(i<3?(' r'+(i+1)):'');
+            const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
+            row.innerHTML=`
+                <div class="rank">${medal}</div>
+                <div><div class="nm">${escapeHtml(r.e.name)}</div><div class="sub">${c.label}</div></div>
+                <div class="streak"><div class="big">${r.st.current>0?('🔥 '+r.st.current):'0'}</div><div class="lab">${r.st.unit==='day'?'day':'wk'} streak</div></div>
+                <div class="best">Best<br>${r.st.longest}</div>
+                <div class="pct"><div class="big" style="color:${r.st.onTimePct>=90?'var(--green)':r.st.onTimePct>=70?'var(--amber)':'#fca5a5'}">${r.st.onTimePct}%</div><div class="lab">on-time</div></div>`;
+            body.appendChild(row);
+        });
+    }
+
+    // ══ QR CODES (scan-to-truck) ═════════════════════════════════════
+    function inspectionBaseUrl(){
+        // build absolute URL to inspection.html sitting next to manager.html
+        const here=location.href.split('#')[0].split('?')[0];
+        return here.replace(/[^/]*$/, 'inspection.html');
+    }
+    document.getElementById('flQR').onclick=()=>{
+        if(typeof QRCode==='undefined'){ alert('QR library still loading — try again in a second.'); return; }
+        const base=inspectionBaseUrl();
+        const assets=Object.entries(DATA.assets)
+            .filter(([id,a])=>a.active!==false)
+            .sort((a,b)=>{
+                const ca=CREW_ORDER.indexOf(a[1].crew)-CREW_ORDER.indexOf(b[1].crew);
+                return ca || assetLabel(a[1]).localeCompare(assetLabel(b[1]));
+            });
+        const inner=document.getElementById('qrSheetInner');
+        inner.innerHTML='';
+        if(!assets.length){ alert('Add some vehicles in Fleet first.'); return; }
+        assets.forEach(([id,a])=>{
+            const url=base+'?truck='+encodeURIComponent(id);
+            const card=document.createElement('div'); card.className='qrcard';
+            const T=ASSET_TYPES[a.type]||{label:a.type};
+            card.innerHTML=`<div class="qimg"></div>
+                <div class="qttl">${escapeHtml(T.label+' '+(a.number||''))}</div>
+                <div class="qsub">${escapeHtml(a.name||'')} · ${CREWS[a.crew]?CREWS[a.crew].label:a.crew}</div>
+                <div class="qfoot">Scan to start your check</div>`;
+            inner.appendChild(card);
+            new QRCode(card.querySelector('.qimg'), { text:url, width:150, height:150,
+                correctLevel: QRCode.CorrectLevel.M });
+        });
+        // print
+        document.body.classList.add('print-qr');
+        setTimeout(()=>{ window.print(); }, 350);   // give QRCode a beat to render
+    };
+    window.addEventListener('afterprint',()=>document.body.classList.remove('print-qr'));
+
+    // ── PHOTO LIGHTBOX (delegated) ───────────────────────────────────
+    const lightbox=document.getElementById('lightbox');
+    document.addEventListener('click',(ev)=>{
+        const img=ev.target.closest && ev.target.closest('.dphoto');
+        if(img){ document.getElementById('lightboxImg').src=img.src; lightbox.style.display='flex'; }
+    });
+    lightbox.onclick=()=>{ lightbox.style.display='none'; document.getElementById('lightboxImg').src=''; };
+
+    // ── ALERT EMAIL settings ─────────────────────────────────────────
+    (function alertStatus(){
+        const el=document.getElementById('alertStatus');
+        if(typeof alertsConfigured==='function' && alertsConfigured())
+            el.innerHTML=' <b style="color:var(--green)">EmailJS connected.</b>';
+        else
+            el.innerHTML=' <b style="color:var(--amber)">EmailJS not set up yet</b> — see alerts-config.js to turn alerts on.';
+    })();
+    fleetRef('config/alertEmail').once('value').then(s=>{ if(s.val()) document.getElementById('alertEmail').value=s.val(); });
+    document.getElementById('saveAlertEmail').onclick=()=>{
+        const v=document.getElementById('alertEmail').value.trim();
+        const msg=document.getElementById('alertMsg');
+        fleetRef('config/alertEmail').set(v||null).then(()=>{
+            msg.style.color='var(--green)'; msg.textContent=v?'Alert email saved':'Alert email cleared';
+        });
+    };
+    document.getElementById('testAlert').onclick=()=>{
+        const msg=document.getElementById('alertMsg');
+        const to=document.getElementById('alertEmail').value.trim();
+        if(!to){ msg.style.color='#ef4444'; msg.textContent='Enter an email first'; return; }
+        if(typeof emailjs==='undefined' || !alertsConfigured()){
+            msg.style.color='#ef4444'; msg.textContent='EmailJS not configured (see alerts-config.js)'; return;
+        }
+        msg.style.color='var(--muted)'; msg.textContent='Sending test…';
+        emailjs.send(EMAILJS.serviceId, EMAILJS.templateId, {
+            to_email:to, driver:'TEST', crew:'Underground', truck:'00',
+            items:'• This is a test alert', notes:'If you got this, alerts work.',
+            when:new Date().toLocaleString('en-US')
+        }).then(()=>{ msg.style.color='var(--green)'; msg.textContent='✓ Test sent — check your inbox'; })
+          .catch(err=>{ msg.style.color='#ef4444'; msg.textContent='Failed: '+(err&&err.text?err.text:'check EmailJS setup'); });
+    };
 
     // ── SETTINGS: change PIN ─────────────────────────────────────────
     document.getElementById('savePin').onclick=()=>{
