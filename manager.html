@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#080808">
+<script>(function(){try{if(localStorage.getItem('fleetTheme')==='light')document.documentElement.classList.add('light');}catch(e){}})();</script>
 <title>Manager — Action Fleet</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -175,7 +176,7 @@
     .irow .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
     .irow .veh{font-family:var(--disp);font-size:22px;letter-spacing:.4px;line-height:1}
     .irow .when{margin-left:auto;font-family:var(--lab);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:right}
-    .irow .desc{margin-top:9px;font-size:13.5px;color:#ddd;line-height:1.5}
+    .irow .desc{margin-top:9px;font-size:13.5px;color:var(--text);line-height:1.5}
     .irow .det{margin-top:8px;font-family:var(--lab);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);line-height:1.7}
     .irow .det a{color:#38bdf8;text-decoration:none}
     .irow .iphotos{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
@@ -218,7 +219,7 @@
     .wo .critflag{font-family:var(--lab);font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
         color:#fca5a5;border:1px solid var(--red);background:#3a1212;padding:2px 7px}
     .wo .who{margin-left:auto;text-align:right;font-family:var(--lab);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);line-height:1.5}
-    .wo .note{margin-top:9px;font-size:13.5px;color:#ddd;line-height:1.5}
+    .wo .note{margin-top:9px;font-size:13.5px;color:var(--text);line-height:1.5}
     .wo .note b{color:var(--muted);font-weight:600}
     .wo .acts{margin-top:11px;display:flex;gap:8px}
 
@@ -276,6 +277,11 @@
         body.print-fleet .wrap{display:none!important}
         body.print-fleet #fleetPrint{display:block!important}
     }
+    html.light{--bg:#f4f4f4;--s1:#ffffff;--s2:#eeeeee;--s3:#e3e3e3;--line:rgba(0,0,0,.12);--text:#161616;--muted:#5c5c5c}
+    html.light body{background:var(--bg)}
+    .themeBtn{background:var(--s1);border:1px solid var(--line);color:var(--muted);font-family:var(--lab);font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:7px 11px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+    .themeBtn:hover{color:var(--text)}
+    @media print{.themeBtn{display:none!important}}
 </style>
 </head>
 <body>
@@ -296,7 +302,10 @@
 <div class="wrap hidden" id="app">
     <header>
         <div class="ttl">Manager<small>Fleet Maintenance</small></div>
-        <a class="home" href="index.html">← Fleet</a>
+        <div style="display:flex;align-items:center;gap:10px">
+            <button class="themeBtn" onclick="__toggleTheme()"><span id="__themeIco">☀️</span><span id="__themeLbl">Light</span></button>
+            <a class="home" href="index.html">← Fleet</a>
+        </div>
     </header>
 
     <div id="cfgErr" class="err">Firebase isn't connected. Paste credentials into firebase-config.js.</div>
@@ -1844,6 +1853,11 @@
         });
     };
 })();
+</script>
+<script>
+function __applyTheme(t){try{localStorage.setItem('fleetTheme',t);}catch(e){}var h=document.documentElement;t==='light'?h.classList.add('light'):h.classList.remove('light');var i=document.getElementById('__themeIco'),l=document.getElementById('__themeLbl');if(i)i.textContent=t==='light'?'🌙':'☀️';if(l)l.textContent=t==='light'?'Dark':'Light';}
+function __toggleTheme(){var c='dark';try{c=localStorage.getItem('fleetTheme')||'dark';}catch(e){}__applyTheme(c==='light'?'dark':'light');}
+(function(){var t='dark';try{t=localStorage.getItem('fleetTheme')||'dark';}catch(e){}__applyTheme(t);})();
 </script>
 </body>
 </html>
