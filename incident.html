@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080808">
+<title>Report an Incident — Action Fleet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root{
+        --bg:#080808; --s1:#111; --s2:#161616; --s3:#202020;
+        --line:rgba(255,255,255,.07); --text:#efefef; --muted:#7a7a7a;
+        --red:#dc2626; --green:#22c55e; --amber:#f59e0b;
+        --disp:'Bebas Neue',sans-serif; --lab:'Oswald',sans-serif; --body:'Inter',sans-serif;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:100vh;-webkit-font-smoothing:antialiased}
+    .wrap{max-width:640px;margin:0 auto;padding:0 16px 120px}
+    header{border-top:3px solid var(--red);padding:18px 0 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .back{font-family:var(--lab);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-decoration:none;border:1px solid var(--line);padding:9px 13px;background:var(--s1)}
+    .ttl{font-family:var(--disp);font-size:30px;letter-spacing:1px;line-height:.9;color:var(--red);text-align:right}
+    .ttl small{display:block;font-family:var(--lab);font-size:10px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+    .intro{color:var(--muted);font-size:13px;line-height:1.6;margin:16px 0 8px}
+    .fld{margin-top:16px}
+    .fld label{display:block;font-family:var(--lab);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+    .fld input,.fld select,.fld textarea{width:100%;background:var(--s1);border:1px solid var(--line);color:var(--text);font-family:var(--body);font-size:15px;padding:13px 14px;outline:none}
+    .fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--red)}
+    .fld textarea{resize:vertical;min-height:90px}
+    .row2{display:flex;gap:12px;flex-wrap:wrap}
+    .row2 .fld{flex:1;min-width:150px}
+    .locrow{display:flex;gap:8px}
+    .locrow input{flex:1}
+    .gpsbtn{font-family:var(--lab);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text);background:var(--s3);border:1px solid var(--line);padding:0 14px;cursor:pointer;white-space:nowrap}
+    .gpsbtn:active{background:var(--s2)}
+    .gpsnote{font-family:var(--lab);font-size:11px;letter-spacing:.06em;color:var(--green);margin-top:6px;min-height:14px}
+    .injtoggle{display:flex;gap:0;border:1px solid var(--line)}
+    .injtoggle button{flex:1;font-family:var(--lab);font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:13px;background:transparent;color:var(--muted);border:none;cursor:pointer}
+    .injtoggle button.on{background:var(--red);color:#fff}
+    /* photos */
+    .addphoto{display:inline-flex;align-items:center;gap:7px;font-family:var(--lab);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--red);border:1px solid var(--line);padding:12px 16px;cursor:pointer;background:var(--s1)}
+    .thumbs{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .thumb{position:relative}
+    .thumb img{height:64px;width:64px;object-fit:cover;border:1px solid var(--line);display:block}
+    .thumb .x{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:13px;cursor:pointer;line-height:1}
+    .dock{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(to top,var(--bg) 70%,transparent);padding:14px 16px 18px;z-index:50}
+    .dock-inner{max-width:640px;margin:0 auto}
+    .submit{width:100%;background:var(--red);color:#fff;font-family:var(--lab);font-size:15px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;padding:16px;border:none;cursor:pointer}
+    .submit:disabled{background:var(--s3);color:#666}
+    .done{display:none;text-align:center;padding:70px 20px}
+    .done .ck{font-size:60px}
+    .done h2{font-family:var(--disp);font-size:46px;letter-spacing:1px;margin:14px 0 8px}
+    .done p{color:var(--muted);font-size:14px;max-width:340px;margin:0 auto 26px;line-height:1.5}
+    .done a{display:inline-block;font-family:var(--lab);font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text);border:1px solid var(--line);padding:13px 22px;text-decoration:none}
+    .err{background:#3a1212;border:1px solid #dc2626;color:#fca5a5;font-family:var(--lab);font-size:12px;letter-spacing:.06em;padding:12px 14px;margin:14px 0;display:none}
+    .hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+    <header>
+        <a class="back" href="index.html">← Back</a>
+        <div class="ttl">Incident<small>Report &amp; Document</small></div>
+    </header>
+
+    <div id="cfgErr" class="err">Firebase isn't connected. Check firebase-config.js.</div>
+
+    <div id="form">
+        <p class="intro">Document what happened while it's fresh — photos, location, and witnesses now save you a headache when insurance calls later.</p>
+
+        <div class="fld">
+            <label>Vehicle involved</label>
+            <select id="vehicle"></select>
+        </div>
+        <div class="row2">
+            <div class="fld"><label>Driver</label><input id="driver" type="text" placeholder="Who was driving"></div>
+            <div class="fld"><label>Date &amp; time</label><input id="when" type="datetime-local"></div>
+        </div>
+
+        <div class="fld">
+            <label>Location</label>
+            <div class="locrow">
+                <input id="locText" type="text" placeholder="Address or cross streets">
+                <button class="gpsbtn" id="gpsBtn">📍 Use GPS</button>
+            </div>
+            <div class="gpsnote" id="gpsNote"></div>
+        </div>
+
+        <div class="fld">
+            <label>What happened?</label>
+            <textarea id="desc" placeholder="Describe the incident — what, how, other vehicles/property involved"></textarea>
+        </div>
+
+        <div class="row2">
+            <div class="fld"><label>Witnesses</label><input id="witnesses" type="text" placeholder="Names / phone numbers"></div>
+            <div class="fld"><label>Police report #</label><input id="police" type="text" placeholder="If one was filed"></div>
+        </div>
+
+        <div class="fld">
+            <label>Any injuries?</label>
+            <div class="injtoggle">
+                <button id="injNo" class="on" type="button">No injuries</button>
+                <button id="injYes" type="button">Injuries</button>
+            </div>
+            <input id="injDetail" type="text" placeholder="Describe injuries" style="margin-top:8px;display:none;width:100%;background:var(--s1);border:1px solid var(--line);color:var(--text);font-family:var(--body);font-size:15px;padding:13px 14px;outline:none">
+        </div>
+
+        <div class="fld">
+            <label>Photos</label>
+            <label class="addphoto">📷 Add photo
+                <input id="photoIn" type="file" accept="image/*" capture="environment" hidden multiple>
+            </label>
+            <div class="thumbs" id="thumbs"></div>
+        </div>
+    </div>
+
+    <div id="done" class="done">
+        <div class="ck">✅</div>
+        <h2>Incident Logged</h2>
+        <p>It's saved with a timestamp and tied to the vehicle's history. Tell your manager directly too.</p>
+        <a href="index.html">Done</a>
+    </div>
+</div>
+
+<div class="dock" id="dock">
+    <div class="dock-inner">
+        <button class="submit" id="submitBtn">Submit Incident Report</button>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="checklists.js"></script>
+<script>
+(function(){
+    if (typeof db==='undefined' || firebaseConfig.databaseURL.includes('PASTE_')){
+        document.getElementById('cfgErr').style.display='block';
+        document.getElementById('dock').style.display='none';
+        return;
+    }
+    // default datetime = now (local)
+    const now=new Date(); now.setMinutes(now.getMinutes()-now.getTimezoneOffset());
+    document.getElementById('when').value=now.toISOString().slice(0,16);
+
+    let ASSETS={}, photos=[], injuries=false, gps=null;
+
+    // load vehicles
+    fleetRef('assets').once('value').then(s=>{
+        ASSETS=s.val()||{};
+        const sel=document.getElementById('vehicle');
+        const list=Object.entries(ASSETS).filter(([id,a])=>a.active!==false)
+            .sort((a,b)=>assetLabel(a[1]).localeCompare(assetLabel(b[1])));
+        sel.innerHTML='<option value="">— select vehicle —</option>'+
+            list.map(([id,a])=>`<option value="${id}">${assetLabel(a)} · ${CREWS[a.crew]?CREWS[a.crew].label:a.crew}</option>`).join('')+
+            '<option value="__other">Other / not listed</option>';
+    });
+
+    // GPS
+    document.getElementById('gpsBtn').onclick=()=>{
+        const note=document.getElementById('gpsNote');
+        if(!navigator.geolocation){ note.style.color='#fca5a5'; note.textContent='GPS not available on this device'; return; }
+        note.style.color='var(--muted)'; note.textContent='Getting location…';
+        navigator.geolocation.getCurrentPosition(pos=>{
+            gps={lat:pos.coords.latitude, lng:pos.coords.longitude};
+            note.style.color='var(--green)';
+            note.textContent='📍 Location captured ('+gps.lat.toFixed(5)+', '+gps.lng.toFixed(5)+')';
+        },()=>{ note.style.color='#fca5a5'; note.textContent='Couldn\'t get location — type the address instead'; },
+        {enableHighAccuracy:true,timeout:10000});
+    };
+
+    // injuries toggle
+    const injNo=document.getElementById('injNo'), injYes=document.getElementById('injYes'), injDetail=document.getElementById('injDetail');
+    injNo.onclick=()=>{ injuries=false; injNo.classList.add('on'); injYes.classList.remove('on'); injDetail.style.display='none'; };
+    injYes.onclick=()=>{ injuries=true; injYes.classList.add('on'); injNo.classList.remove('on'); injDetail.style.display='block'; };
+
+    // photos
+    function compressImage(file,maxDim,q){
+        return new Promise((res,rej)=>{
+            const r=new FileReader();
+            r.onload=()=>{ const img=new Image(); img.onload=()=>{
+                let w=img.width,h=img.height; const s=Math.min(1,maxDim/Math.max(w,h));
+                w=Math.round(w*s); h=Math.round(h*s);
+                const c=document.createElement('canvas'); c.width=w; c.height=h;
+                c.getContext('2d').drawImage(img,0,0,w,h); res(c.toDataURL('image/jpeg',q));
+            }; img.onerror=rej; img.src=r.result; }; r.onerror=rej; r.readAsDataURL(file);
+        });
+    }
+    document.getElementById('photoIn').onchange=async(e)=>{
+        const files=[...(e.target.files||[])];
+        for(const f of files){ try{ const d=await compressImage(f,1280,0.6); photos.push(d); }catch(_){} }
+        e.target.value=''; renderThumbs();
+    };
+    function renderThumbs(){
+        const t=document.getElementById('thumbs'); t.innerHTML='';
+        photos.forEach((p,i)=>{
+            const d=document.createElement('div'); d.className='thumb';
+            d.innerHTML=`<img src="${p}" alt=""><button class="x" type="button">×</button>`;
+            d.querySelector('.x').onclick=()=>{ photos.splice(i,1); renderThumbs(); };
+            t.appendChild(d);
+        });
+    }
+
+    // submit
+    document.getElementById('submitBtn').onclick=()=>{
+        const vId=document.getElementById('vehicle').value;
+        const desc=document.getElementById('desc').value.trim();
+        const btn=document.getElementById('submitBtn');
+        if(!vId){ alert('Pick the vehicle involved'); return; }
+        if(!desc){ alert('Describe what happened'); return; }
+        const a = vId!=='__other' ? ASSETS[vId] : null;
+        const whenVal=document.getElementById('when').value;
+        const rec={
+            assetId: vId==='__other'?null:vId,
+            assetLabel: a?assetLabel(a):'Other / not listed',
+            crew: a?a.crew:null,
+            driver: document.getElementById('driver').value.trim()||null,
+            datetime: whenVal||null,
+            ts: whenVal?new Date(whenVal).getTime():Date.now(),
+            location: { text:document.getElementById('locText').value.trim()||null, lat:gps?gps.lat:null, lng:gps?gps.lng:null },
+            description: desc,
+            witnesses: document.getElementById('witnesses').value.trim()||null,
+            policeReport: document.getElementById('police').value.trim()||null,
+            injuries: injuries,
+            injuryDetail: injuries ? (injDetail.value.trim()||null) : null,
+            photos: photos.length?photos:null,
+            loggedAt: Date.now()
+        };
+        btn.disabled=true; btn.textContent='Saving…';
+        fleetRef('incidents').push(rec).then(()=>{
+            document.getElementById('form').style.display='none';
+            document.getElementById('dock').style.display='none';
+            document.getElementById('done').style.display='block';
+            window.scrollTo(0,0);
+        }).catch(()=>{ btn.disabled=false; btn.textContent='Retry — save failed'; });
+    };
+})();
+</script>
+</body>
+</html>

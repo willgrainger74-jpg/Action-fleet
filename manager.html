@@ -160,6 +160,28 @@
     .asset.archived{opacity:.5}
     .fleet-sub{font-family:var(--lab);font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:18px 2px 9px;display:flex;align-items:center;gap:8px}
 
+    /* patterns (recurring defects) */
+    .prow{background:var(--s1);border:1px solid var(--line);border-left:3px solid var(--amber);padding:14px 16px;margin-bottom:8px}
+    .prow.hot{border-left-color:var(--red)}
+    .prow .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .prow .veh{font-family:var(--disp);font-size:22px;letter-spacing:.4px;line-height:1}
+    .prow .item{font-family:var(--lab);font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--text)}
+    .prow .cnt{margin-left:auto;font-family:var(--disp);font-size:26px;color:var(--amber)}
+    .prow.hot .cnt{color:#fca5a5}
+    .prow .meta{font-family:var(--lab);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+
+    /* incidents */
+    .irow{background:var(--s1);border:1px solid var(--line);border-left:3px solid var(--red);padding:14px 16px;margin-bottom:8px}
+    .irow .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .irow .veh{font-family:var(--disp);font-size:22px;letter-spacing:.4px;line-height:1}
+    .irow .when{margin-left:auto;font-family:var(--lab);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:right}
+    .irow .desc{margin-top:9px;font-size:13.5px;color:#ddd;line-height:1.5}
+    .irow .det{margin-top:8px;font-family:var(--lab);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);line-height:1.7}
+    .irow .det a{color:#38bdf8;text-decoration:none}
+    .irow .iphotos{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .irow .injury{display:inline-block;font-family:var(--lab);font-size:9.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#fca5a5;border:1px solid var(--red);background:#3a1212;padding:2px 7px}
+    .irow .acts{margin-top:11px;display:flex;gap:8px}
+
     /* leaderboard */
     .lbrow{display:flex;align-items:center;gap:14px;background:var(--s1);border:1px solid var(--line);
         border-left:3px solid var(--s3);padding:13px 16px;margin-bottom:7px}
@@ -283,6 +305,8 @@
         <div class="tab active" data-tab="board">Board</div>
         <div class="tab" data-tab="alerts">Alerts<span id="alertBadge" class="badge hidden">0</span></div>
         <div class="tab" data-tab="maint">Maintenance<span id="maintBadge" class="badge hidden">0</span></div>
+        <div class="tab" data-tab="patterns">Patterns<span id="patternBadge" class="badge hidden">0</span></div>
+        <div class="tab" data-tab="incidents">Incidents<span id="incidentBadge" class="badge hidden">0</span></div>
         <div class="tab" data-tab="compliance">Compliance<span id="compBadge" class="badge hidden">0</span></div>
         <div class="tab" data-tab="fleet">Fleet</div>
         <div class="tab" data-tab="leaderboard">Leaderboard</div>
@@ -320,6 +344,22 @@
             <button class="segbtn" data-f="resolved">Fixed</button>
         </div>
         <div id="maintBody"></div>
+    </div>
+
+    <!-- PATTERNS (recurring defects per vehicle) -->
+    <div class="panel" id="panel-patterns">
+        <div style="color:var(--muted);font-size:13px;line-height:1.6;max-width:580px;margin-bottom:16px">
+            🔁 The same problem flagged <b style="color:var(--text)">3+ times on the same truck</b> — a recurring defect that's likely a deeper issue. Catch it before it strands a crew or fails a roadside.
+        </div>
+        <div id="patternsBody"></div>
+    </div>
+
+    <!-- INCIDENTS (accidents / damage) -->
+    <div class="panel" id="panel-incidents">
+        <div class="reportbar no-print">
+            <button class="addbtn" id="incAdd" style="width:auto;margin:0;padding:13px 20px">+ Log Incident</button>
+        </div>
+        <div id="incidentsBody"></div>
     </div>
 
     <!-- COMPLIANCE (doc expirations + PM due) -->
@@ -548,6 +588,34 @@
     </div>
 </div>
 
+<!-- INCIDENT MODAL -->
+<div class="modal" id="incModal">
+    <div class="mbox" style="max-width:520px">
+        <h3 id="incModalTitle">Log Incident</h3>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <div class="fld" style="flex:2;min-width:170px"><label>Vehicle</label><select id="i_vehicle"></select></div>
+            <div class="fld" style="flex:1;min-width:120px"><label>Driver</label><input id="i_driver" type="text" placeholder="Driver"></div>
+        </div>
+        <div class="fld"><label>Date &amp; time</label><input id="i_when" type="datetime-local"></div>
+        <div class="fld"><label>Location</label><input id="i_loc" type="text" placeholder="Address or cross streets"></div>
+        <div class="fld"><label>What happened?</label><textarea id="i_desc" rows="3" style="width:100%;background:var(--s3);border:1px solid var(--line);color:var(--text);font-family:var(--body);font-size:14px;padding:11px 12px;outline:none;resize:vertical"></textarea></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <div class="fld" style="flex:1;min-width:150px"><label>Witnesses</label><input id="i_witness" type="text" placeholder="Names / phones"></div>
+            <div class="fld" style="flex:1;min-width:120px"><label>Police report #</label><input id="i_police" type="text"></div>
+        </div>
+        <div class="fld"><label>Injuries</label><input id="i_injury" type="text" placeholder="None, or describe"></div>
+        <div class="fld"><label>Photos</label>
+            <label class="mini edit" style="display:inline-block;cursor:pointer;padding:10px 14px">📷 Add<input id="i_photoIn" type="file" accept="image/*" multiple hidden></label>
+            <div id="i_thumbs" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"></div>
+        </div>
+        <div id="incErr" style="color:#ef4444;font-family:var(--lab);font-size:12px;min-height:16px"></div>
+        <div class="mbtns">
+            <button class="cancel" id="incCancel">Cancel</button>
+            <button class="save" id="incSave">Save</button>
+        </div>
+    </div>
+</div>
+
 <!-- PHOTO LIGHTBOX -->
 <div id="lightbox" style="position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;padding:20px;cursor:zoom-out">
     <img id="lightboxImg" alt="" style="max-width:100%;max-height:100%;object-fit:contain">
@@ -571,7 +639,7 @@
 <script>
 (function(){
     const DEFAULT_PIN='2468';
-    let DATA={emps:{}, insp:{}, workorders:{}, stock:{}, assets:{}, costs:{}}, editingId=null;
+    let DATA={emps:{}, insp:{}, workorders:{}, stock:{}, assets:{}, costs:{}, incidents:{}}, editingId=null;
     function money(n){ return '$'+Math.round((parseFloat(n)||0)).toLocaleString('en-US'); }
 
     // ── PIN gate ─────────────────────────────────────────────────────
@@ -618,6 +686,7 @@
         fleetRef('stock').on('value',s=>{ DATA.stock=s.val()||{}; paintStock(); });
         fleetRef('assets').on('value',s=>{ DATA.assets=s.val()||{}; paint(); });
         fleetRef('costs').on('value',s=>{ DATA.costs=s.val()||{}; paintFleet(); });
+        fleetRef('incidents').on('value',s=>{ DATA.incidents=s.val()||{}; paintIncidents(); paintFleet(); });
     }
 
     function activeEmps(){
@@ -626,7 +695,7 @@
             .sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''));
     }
 
-    function paint(){ paintBoard(); paintAlerts(); paintRoster(); paintMaintenance(); paintFleet(); paintCompliance(); paintLeaderboard(); fillReportPeople(); }
+    function paint(){ paintBoard(); paintAlerts(); paintRoster(); paintMaintenance(); paintPatterns(); paintIncidents(); paintFleet(); paintCompliance(); paintLeaderboard(); fillReportPeople(); }
 
     // ── BOARD ────────────────────────────────────────────────────────
     function paintBoard(){
@@ -1182,6 +1251,11 @@
             badges+=`<span class="costbadge ${rs.flag?'warn':''}">${ctxt}</span>`;
             if(rs.flag) badges+=`<span class="costbadge warn">⚠ Consider replacing</span>`;
         }
+        // recurring-defect patterns + incidents
+        const recN=recurringCountFor(id,a);
+        if(recN) badges+=`<span class="costbadge warn">🔁 ${recN} recurring issue${recN>1?'s':''}</span>`;
+        const incN=incidentCountFor(id);
+        if(incN) badges+=`<span class="costbadge warn">⚠️ ${incN} incident${incN>1?'s':''}</span>`;
         row.innerHTML=`<div class="top">
                 <span class="glyph">${T.glyph}</span>
                 <span class="nm">${T.label} ${escapeHtml(a.number||'')}</span>
@@ -1311,6 +1385,174 @@
     document.getElementById('ctClose').onclick=()=>costModal.classList.remove('show');
     costModal.onclick=(ev)=>{ if(ev.target===costModal) costModal.classList.remove('show'); };
 
+    // ══ shared: resolve a vehicle-key (from defects/patterns) to a label ══
+    function vkLabel(vk){
+        if(!vk) return 'Unknown vehicle';
+        if(vk.indexOf('num:')===0){ return 'Truck '+vk.slice(4); }
+        const a=DATA.assets[vk];
+        return a ? assetLabel(a) : 'Vehicle';
+    }
+    function incidentCountFor(assetId){
+        return Object.values(DATA.incidents||{}).filter(i=>i.assetId===assetId).length;
+    }
+    function recurringCountFor(assetId, asset){
+        // how many recurring-defect patterns hit this asset (by id or truck number)
+        const pats=recurringDefects(DATA.insp);
+        const num=asset&&asset.number!=null?String(asset.number):null;
+        return pats.filter(p=> p.vk===assetId || (num && p.vk==='num:'+num)).length;
+    }
+
+    // ══ PATTERNS (recurring defects) ═════════════════════════════════
+    function paintPatterns(){
+        const body=document.getElementById('patternsBody'); if(!body) return;
+        const pats=recurringDefects(DATA.insp);
+        const badge=document.getElementById('patternBadge');
+        if(badge){ if(pats.length){ badge.textContent=pats.length; badge.classList.remove('hidden'); } else badge.classList.add('hidden'); }
+        if(!pats.length){ body.innerHTML='<div class="empty">No recurring problems yet. A defect flagged 3+ times on the same truck will show up here.</div>'; return; }
+        body.innerHTML='';
+        pats.forEach(p=>{
+            const hot = p.count>=5 || (p.avgIntervalDays!=null && p.avgIntervalDays<=21 && p.count>=3);
+            const row=document.createElement('div'); row.className='prow'+(hot?' hot':'');
+            const cadence = p.avgIntervalDays!=null ? ('about every '+p.avgIntervalDays+' day'+(p.avgIntervalDays===1?'':'s')) : '';
+            row.innerHTML=`<div class="top">
+                    <span class="veh">${escapeHtml(vkLabel(p.vk))}</span>
+                    <span class="item">${escapeHtml(p.item||'')}</span>
+                    <span class="cnt">${p.count}×</span>
+                </div>
+                <div class="meta">${cadence?cadence+' · ':''}last ${prettyDate(p.lastDate)} · first seen ${prettyDate(p.firstDate)}</div>`;
+            body.appendChild(row);
+        });
+    }
+
+    // ══ INCIDENTS (accidents / damage) ═══════════════════════════════
+    function paintIncidents(){
+        const body=document.getElementById('incidentsBody'); if(!body) return;
+        const items=Object.entries(DATA.incidents||{}).sort((a,b)=>(b[1].ts||0)-(a[1].ts||0));
+        const badge=document.getElementById('incidentBadge');
+        if(badge){ if(items.length){ badge.textContent=items.length; badge.classList.remove('hidden'); } else badge.classList.add('hidden'); }
+        if(!items.length){ body.innerHTML='<div class="empty">No incidents logged. Use “+ Log Incident,” or a field guy can report one from the home screen.</div>'; return; }
+        body.innerHTML='';
+        items.forEach(([id,inc])=>{
+            const when = inc.datetime ? new Date(inc.datetime).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})
+                       : (inc.ts?new Date(inc.ts).toLocaleString('en-US'):'');
+            const loc=inc.location||{};
+            const locBits=[];
+            if(loc.text) locBits.push(escapeHtml(loc.text));
+            if(loc.lat&&loc.lng) locBits.push(`<a href="https://maps.google.com/?q=${loc.lat},${loc.lng}" target="_blank" rel="noopener">📍 map</a>`);
+            const det=[];
+            det.push('Driver: '+(inc.driver?escapeHtml(inc.driver):'—'));
+            if(locBits.length) det.push('Where: '+locBits.join(' · '));
+            if(inc.witnesses) det.push('Witnesses: '+escapeHtml(inc.witnesses));
+            if(inc.policeReport) det.push('Police #: '+escapeHtml(inc.policeReport));
+            const photos=(inc.photos||[]).map(p=>`<img src="${p}" class="dphoto" style="height:64px;width:64px;object-fit:cover;border:1px solid var(--line);cursor:zoom-in">`).join('');
+            const injury = inc.injuries ? `<span class="injury">⚕ Injuries${inc.injuryDetail?(' — '+escapeHtml(inc.injuryDetail)):''}</span>` : '';
+            const row=document.createElement('div'); row.className='irow';
+            row.innerHTML=`<div class="top">
+                    <span class="veh">${escapeHtml(inc.assetLabel||'Vehicle')}</span>
+                    <span class="when">${when}</span>
+                </div>
+                ${injury}
+                <div class="desc">${escapeHtml(inc.description||'')}</div>
+                <div class="det">${det.join('<br>')}</div>
+                ${photos?`<div class="iphotos">${photos}</div>`:''}
+                <div class="acts">
+                    <button class="mini edit">Edit</button>
+                    <button class="mini arch">Delete</button>
+                </div>`;
+            row.querySelector('.edit').onclick=()=>openIncidentModal(id,inc);
+            row.querySelector('.arch').onclick=()=>{ if(confirm('Delete this incident report?')) fleetRef('incidents/'+id).set(null); };
+            body.appendChild(row);
+        });
+    }
+
+    // incident modal
+    const incModal=document.getElementById('incModal');
+    let incEditId=null, incPhotos=[];
+    function compressTo(file,maxDim,q){
+        return new Promise((res,rej)=>{
+            const r=new FileReader();
+            r.onload=()=>{ const img=new Image(); img.onload=()=>{
+                let w=img.width,h=img.height; const s=Math.min(1,maxDim/Math.max(w,h));
+                w=Math.round(w*s); h=Math.round(h*s);
+                const c=document.createElement('canvas'); c.width=w; c.height=h;
+                c.getContext('2d').drawImage(img,0,0,w,h); res(c.toDataURL('image/jpeg',q));
+            }; img.onerror=rej; img.src=r.result; }; r.onerror=rej; r.readAsDataURL(file);
+        });
+    }
+    function fillIncidentVehicles(sel){
+        const list=Object.entries(DATA.assets).filter(([id,a])=>a.active!==false)
+            .sort((a,b)=>assetLabel(a[1]).localeCompare(assetLabel(b[1])));
+        sel.innerHTML='<option value="">— select —</option>'+
+            list.map(([id,a])=>`<option value="${id}">${escapeHtml(assetLabel(a))} · ${CREWS[a.crew]?CREWS[a.crew].label:a.crew}</option>`).join('')+
+            '<option value="__other">Other / not listed</option>';
+    }
+    function renderIncThumbs(){
+        const t=document.getElementById('i_thumbs'); t.innerHTML='';
+        incPhotos.forEach((p,i)=>{
+            const d=document.createElement('div'); d.style.position='relative';
+            d.innerHTML=`<img src="${p}" style="height:60px;width:60px;object-fit:cover;border:1px solid var(--line)"><button type="button" style="position:absolute;top:-7px;right:-7px;width:20px;height:20px;border-radius:50%;background:var(--red);color:#fff;border:none;cursor:pointer;font-size:12px">×</button>`;
+            d.querySelector('button').onclick=()=>{ incPhotos.splice(i,1); renderIncThumbs(); };
+            t.appendChild(d);
+        });
+    }
+    function openIncidentModal(id,inc){
+        incEditId=id||null; incPhotos=inc&&inc.photos?[...inc.photos]:[];
+        document.getElementById('incModalTitle').textContent=id?'Edit Incident':'Log Incident';
+        fillIncidentVehicles(document.getElementById('i_vehicle'));
+        document.getElementById('i_vehicle').value = inc ? (inc.assetId||'__other') : '';
+        document.getElementById('i_driver').value = inc?inc.driver||'':'';
+        let dtv = inc&&inc.datetime ? inc.datetime : '';
+        if(!dtv){ const n=new Date(); n.setMinutes(n.getMinutes()-n.getTimezoneOffset()); dtv=n.toISOString().slice(0,16); }
+        document.getElementById('i_when').value=dtv;
+        document.getElementById('i_loc').value = inc&&inc.location?inc.location.text||'':'';
+        document.getElementById('i_desc').value = inc?inc.description||'':'';
+        document.getElementById('i_witness').value = inc?inc.witnesses||'':'';
+        document.getElementById('i_police').value = inc?inc.policeReport||'':'';
+        document.getElementById('i_injury').value = inc?(inc.injuryDetail|| (inc.injuries?'Yes':'') ):'';
+        document.getElementById('incErr').textContent='';
+        renderIncThumbs();
+        // preserve existing GPS on edit
+        incModal._gps = inc&&inc.location&&inc.location.lat ? {lat:inc.location.lat,lng:inc.location.lng} : null;
+        incModal.classList.add('show');
+    }
+    document.getElementById('incAdd').onclick=()=>openIncidentModal(null,null);
+    document.getElementById('incCancel').onclick=()=>incModal.classList.remove('show');
+    incModal.onclick=(ev)=>{ if(ev.target===incModal) incModal.classList.remove('show'); };
+    document.getElementById('i_photoIn').onchange=async(e)=>{
+        const files=[...(e.target.files||[])];
+        for(const f of files){ try{ incPhotos.push(await compressTo(f,1280,0.6)); }catch(_){} }
+        e.target.value=''; renderIncThumbs();
+    };
+    document.getElementById('incSave').onclick=()=>{
+        const vId=document.getElementById('i_vehicle').value;
+        const desc=document.getElementById('i_desc').value.trim();
+        const err=document.getElementById('incErr');
+        if(!vId){ err.textContent='Pick the vehicle'; return; }
+        if(!desc){ err.textContent='Describe what happened'; return; }
+        const a = vId!=='__other'?DATA.assets[vId]:null;
+        const whenVal=document.getElementById('i_when').value;
+        const injTxt=document.getElementById('i_injury').value.trim();
+        const rec={
+            assetId: vId==='__other'?null:vId,
+            assetLabel: a?assetLabel(a):'Other / not listed',
+            crew: a?a.crew:null,
+            driver: document.getElementById('i_driver').value.trim()||null,
+            datetime: whenVal||null,
+            ts: whenVal?new Date(whenVal).getTime():Date.now(),
+            location: { text:document.getElementById('i_loc').value.trim()||null,
+                        lat:incModal._gps?incModal._gps.lat:null, lng:incModal._gps?incModal._gps.lng:null },
+            description: desc,
+            witnesses: document.getElementById('i_witness').value.trim()||null,
+            policeReport: document.getElementById('i_police').value.trim()||null,
+            injuries: !!injTxt && injTxt.toLowerCase()!=='no' && injTxt.toLowerCase()!=='none',
+            injuryDetail: injTxt||null,
+            photos: incPhotos.length?incPhotos:null,
+            loggedAt: Date.now()
+        };
+        const ref = incEditId ? fleetRef('incidents/'+incEditId).update(rec) : fleetRef('incidents').push(rec);
+        Promise.resolve(ref).then(()=>incModal.classList.remove('show'));
+    };
+
     // ══ FLEET STATUS REPORT (printable) ══════════════════════════════
     document.getElementById('flReport').onclick=buildFleetReport;
     function buildFleetReport(){
@@ -1331,7 +1573,10 @@
             if(pm.status==='due')urgency+=50; else if(pm.status==='soon')urgency+=20;
             if(rs.flag)urgency+=60;
             urgency+=openDef*10;
-            return {id,a,T,reg,ins,dot,pm,ct,rs,odo,openDef,urgency};
+            const recN=recurringCountFor(id,a);
+            const incN=incidentCountFor(id);
+            urgency += recN*25 + incN*15;
+            return {id,a,T,reg,ins,dot,pm,ct,rs,odo,openDef,recN,incN,urgency};
         }).sort((x,y)=>y.urgency-x.urgency || assetLabel(x.a).localeCompare(assetLabel(y.a)));
 
         const fmt=(s,dateStr)=> !dateStr ? '<span style="color:#999">—</span>'
@@ -1346,6 +1591,8 @@
             if(r.pm.status==='due') notes.push('Service DUE');
             else if(r.pm.status==='soon') notes.push('Service soon');
             if(r.rs.flag) notes.push('REPLACE — repairs '+r.rs.pct+'% of value');
+            if(r.recN) notes.push('🔁 '+r.recN+' recurring issue'+(r.recN>1?'s':''));
+            if(r.incN) notes.push('⚠️ '+r.incN+' incident'+(r.incN>1?'s':''));
             if(r.openDef) notes.push(r.openDef+' open defect'+(r.openDef>1?'s':''));
             body+=`<tr>
                 <td><b>${escapeHtml(r.T.label+' '+(r.a.number||''))}</b><br><span style="color:#666">${escapeHtml(r.a.name||'')}</span></td>

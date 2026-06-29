@@ -343,3 +343,39 @@ function replaceSignal(asset, total){
     const pct=Math.round(total/pp*100);
     return { flag: pct>=50, pct };
 }
+
+// ══════════════════════════════════════════════════════════════════
+//  PREDICTIVE FLAGS — recurring defects per vehicle
+// ══════════════════════════════════════════════════════════════════
+// Finds the same defect item flagged repeatedly on the same vehicle.
+// Returns [{ vk, item, count, avgIntervalDays, firstDate, lastDate, dates }]
+// vk = truckId when present, else "num:<truckNumber>". minCount default 3.
+function recurringDefects(allInspections, minCount){
+    minCount = minCount || 3;
+    const map={};
+    Object.values(allInspections||{}).forEach(days=>{
+        Object.entries(days||{}).forEach(([dk,day])=>{
+            ['daily','weekly'].forEach(rt=>{
+                const r=day[rt]; if(!r||!r.defects) return;
+                const vk = r.truckId || (r.truckNumber!=null && r.truckNumber!=='' ? ('num:'+r.truckNumber) : null);
+                if(!vk) return;
+                r.defects.forEach(d=>{
+                    const key=vk+'||'+(d.item||'');
+                    (map[key]=map[key]||{vk, item:d.item, dates:[]}).dates.push(dk);
+                });
+            });
+        });
+    });
+    const out=[];
+    Object.values(map).forEach(m=>{
+        const sorted=[...new Set(m.dates)].sort();   // unique days
+        if(sorted.length < minCount) return;
+        let gaps=[];
+        for(let i=1;i<sorted.length;i++) gaps.push(Math.round((parseKey(sorted[i])-parseKey(sorted[i-1]))/86400000));
+        const avg = gaps.length ? Math.round(gaps.reduce((a,b)=>a+b,0)/gaps.length) : null;
+        out.push({ vk:m.vk, item:m.item, count:sorted.length, avgIntervalDays:avg,
+                   firstDate:sorted[0], lastDate:sorted[sorted.length-1], dates:sorted });
+    });
+    out.sort((a,b)=> b.count-a.count || b.lastDate.localeCompare(a.lastDate));
+    return out;
+}
